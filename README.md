@@ -57,6 +57,27 @@ In the _src/main/resources/application.properties_ file:
 
 ****
 
+## FIRST TIME RUNNING
+
+You will have to create by default the users, this is made automatically adding
+in the _src/main/resources/data.sql_:
+
+    insert into user values (1, 'user1', '1234');
+
+>Put all necessary User values.
+
+and uncommenting the last line in the _src/main/resources/application.properties_:
+
+    spring.datasource.initialization-mode=always
+
+>Comment this line again after the first execution.
+
+To run the project use this command in your coding environment terminal:
+
+    mvnw spring-boot:run
+
+****
+
 ## API LOGIC
 ### SPRING-CLASSES
 
