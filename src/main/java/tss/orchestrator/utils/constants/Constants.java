@@ -1,9 +1,19 @@
 package tss.orchestrator.utils.constants;
 
 public class Constants {
-    public static final String API_POLICIES = "/api/policies";
 
-    public static final String API_BLOCK = "/api/block";
+    //Login Paths
+    public static final String API_LOGIN = "/user";
+    public static final String API_AUTH = "/auth";
+
+    //UI Paths
+    public static final String API_USERS = "/users";
+    public static final String API_POLICIES = "/{userId}/api/policies";
+    public static final String API_SMART_POLICIES = "/{userId}/api/smart-policies";
+    public static final String API_SMART_POLICY = "/{userId}/api/smart-policies/{smartId}";
+
+    //BlockChain Paths
+    public static final String API_BLOCKCHAIN = "/api/blockchain";
     public static final String API_ACCOUNTS = "/api/accounts";
     public static final String API_TRANSACTIONS = "/api/transactions";
     public static final String API_BALANCE = "/api/balance";

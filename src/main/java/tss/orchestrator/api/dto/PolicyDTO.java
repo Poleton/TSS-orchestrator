@@ -1,7 +1,5 @@
 package tss.orchestrator.api.dto;
 
-import tss.orchestrator.models.User;
-
 public class PolicyDTO {
     private Integer id;
     private String state;

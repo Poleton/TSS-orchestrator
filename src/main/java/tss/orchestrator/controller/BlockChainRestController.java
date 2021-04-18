@@ -7,8 +7,7 @@ import org.web3j.protocol.core.methods.response.EthAccounts;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import tss.orchestrator.api.BlockChainRestControllerApi;
-import tss.orchestrator.service.impl.BlockChainServiceImpl;
+import tss.orchestrator.api.BlockChainRestApi;
 import tss.orchestrator.utils.constants.Constants;
 import tss.orchestrator.utils.helpers.TimeHelper;
 import tss.orchestrator.service.BlockChainService;
@@ -19,12 +18,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 @RestController
-public class BlockChainRestController implements BlockChainRestControllerApi {
+public class BlockChainRestController implements BlockChainRestApi {
 
     @Autowired
     BlockChainService blockChainService;
 
-    @GetMapping(Constants.API_BLOCK)
+    @GetMapping(Constants.API_BLOCKCHAIN)
     public Future<BlockChainResponseTransfer> getBlock() {
         BlockChainResponseTransfer blockChainResponseTransfer = new BlockChainResponseTransfer();
         Instant start = TimeHelper.start();
