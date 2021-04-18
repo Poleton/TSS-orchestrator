@@ -37,7 +37,7 @@ Using the _MySQL Command Line Client_ (once accessed with your root pass):
 
     mysql> create database db_orchestrator; 
     mysql> create user 'tss'@'%' identified by 'tss1234'; 
-    mysql> grant all on db_orchestrator.* to 'TSS'@'%'; 
+    mysql> grant all on db_orchestrator.* to 'tss'@'%'; 
 
 1. Creates the new database called "db_orchestrator".
 2. Creates the user "tss" with "tss1234" as its password.
