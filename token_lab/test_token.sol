@@ -65,6 +65,7 @@ contract ERC20Interface {
     ) public returns (bool success);
 
     event Transfer(address indexed from, address indexed to, uint256 tokens);
+
     event Approval(
         address indexed tokenOwner,
         address indexed spender,
@@ -89,7 +90,7 @@ contract ApproveAndCallFallBack {
 /**
 ERC20 Token, with the addition of symbol, name and decimals and assisted token transfers
 */
-contract TSSToken is ERC20Interface, SafeMath {
+contract TToken is ERC20Interface, SafeMath {
     string public symbol;
     string public name;
     uint8 public decimals;
