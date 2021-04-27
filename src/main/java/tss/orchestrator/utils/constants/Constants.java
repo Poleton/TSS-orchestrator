@@ -1,10 +1,11 @@
 package tss.orchestrator.utils.constants;
 
-public class Constants {
+public class  Constants {
 
     //Login Paths
-    public static final String API_LOGIN = "/user";
+    public static final String API_LOGIN = "/login";
     public static final String API_AUTH = "/auth";
+
 
     //UI Paths
     public static final String API_USERS = "/users";

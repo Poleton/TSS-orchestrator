@@ -6,5 +6,5 @@ import tss.orchestrator.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-
+   User findByNameAndPassword(String name,String password);
 }
