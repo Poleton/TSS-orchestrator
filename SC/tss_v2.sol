@@ -178,17 +178,19 @@ contract smartInsurancePolicy {
     function updateReserve (uint256 conditionLevelID, uint256 conditionExcessTime, uint256 conditionLevelWeight) private {
 
         uint256 shipmentID = extractDigit(conditionLevelID, 2);
+        contractReserve = 0;
 
         for (uint256 i = 0; i < shipmentCount; i++) {
 
             if(shipments[i].ID == shipmentID) {
-                shipments[i].reserve = shipments[i].reserve + ((shipments[i].liability / shipments[i].numSensors) * (conditionExcessTime * conditionLevelWeight));
+                shipments[i].reserve += ((shipments[i].liability / shipments[i].numSensors) * (conditionExcessTime * conditionLevelWeight));
                 
                 if(shipments[i].reserve > shipments[i].liability) {
                     shipments[i].reserve = shipments[i].liability;
                 }
             }
-        }   
+            contractReserve += shipments[i].reserve;
+        }
     }
 
     // ID Extraction Function
