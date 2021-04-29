@@ -1,14 +1,18 @@
 package tss.orchestrator.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tss.orchestrator.api.UIRestApi;
 import tss.orchestrator.api.dto.PolicyDTO;
+import tss.orchestrator.api.dto.SmartPolicyDTO;
 import tss.orchestrator.models.Policy;
+import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.models.User;
 import tss.orchestrator.service.PolicyRepository;
+import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
 
 import java.net.URI;
@@ -24,6 +28,9 @@ public class UIRestController implements UIRestApi {
     @Autowired
     private PolicyRepository policyRepository;
 
+    @Autowired
+    private SmartPolicyRepository smartPolicyRepository;
+
     @Override
     public List<Policy> retrieveAllPolicies(@PathVariable int userId) {
         Optional<User> userOptional = userRepository.findById(userId);
@@ -32,6 +39,7 @@ public class UIRestController implements UIRestApi {
             //throw new UserNotFoundException("userId-" + userId);
         }
 
+        //return System.out.println("HELLO WORLD!");
         return userOptional.get().getPolicies();
     }
 
@@ -40,9 +48,10 @@ public class UIRestController implements UIRestApi {
 
         Optional<User> userOptional = userRepository.findById(userId);
 
-        if(!userOptional.isPresent()) {
-            //throw new UserNotFoundException("userId-" + userId);
-        }
+
+       /* if(!userOptional.isPresent()) {
+            throw new UserNotFoundException("userId-" + userId);
+        }*/
 
         Policy policy = new Policy(policyDTO, userOptional.get());
 
@@ -52,5 +61,29 @@ public class UIRestController implements UIRestApi {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @Override
+    public ResponseEntity<Object> createSmartPolicy(int userId, SmartPolicyDTO smartPolicyDTO) {
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Policy> policy = policyRepository.findById(smartPolicyDTO.getId());
+
+        SmartPolicy smartPolicy = new SmartPolicy(smartPolicyDTO,policy.get(),user.get());
+
+        smartPolicyRepository.save(smartPolicy);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(smartPolicy.getSmartId()).toUri();
+
+
+        return ResponseEntity.created(location).build();
+
+
+    }
+
+    public List<SmartPolicy> retrieveAllSmartPolicies (int userId) throws Exception {
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isPresent()){
+            return user.get().getSmartPolicies();
+        }else throw new Exception("Missing user");
     }
 }
