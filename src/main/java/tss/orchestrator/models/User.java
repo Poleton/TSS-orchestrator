@@ -20,6 +20,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Policy> policies;
 
+    @OneToMany(mappedBy = "user")
+    private List<SmartPolicy> smartPolicies;
 
     //@OneToMany(mappedBy = "user")
     //private List<SmartPolicy> smartPolicies;
@@ -64,6 +66,10 @@ public class User {
     public void setPolicies(List<Policy> policies) {
         this.policies = policies;
     }
+
+    public List<SmartPolicy> getSmartPolicies() { return smartPolicies;}
+
+    public void setSmartPolicies(List<SmartPolicy> smartPolicies) {this.smartPolicies = smartPolicies; };
 
     @Override
     public String toString() {
