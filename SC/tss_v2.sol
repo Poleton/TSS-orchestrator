@@ -1,9 +1,9 @@
-pragma solidity >= 0.7.0 < 0.9.0;
+pragma solidity >= 0.8.0 < 0.9.0;
 
 contract smartInsurancePolicy {
 
     // Contract State
-    enum State {Initialized, Funded, Activated, Deactivated};
+    enum State {Initialized, Funded, Activated, Deactivated}
     State contractState;
 
     // Contract Addresses
@@ -45,7 +45,7 @@ contract smartInsurancePolicy {
 
     struct Sensor {
         uint256 ID;
-        uint256 type;
+        uint256 sensorType;
         uint256 lastUpdate;
     }
 
@@ -85,7 +85,7 @@ contract smartInsurancePolicy {
         // Devuelve true en caso de que se haya activado el SC
         // Actualiza contractState a State.Activated
 
-        uint256 public amount = 0;
+        uint256 amount = 0;
 
         for(uint256 i = 0; i < shipmentCount; i++) {
             amount += shipments[i].liability;
@@ -124,7 +124,7 @@ contract smartInsurancePolicy {
     // Contract Initialization Functions
     function addShipment (uint256 sID, uint256 sLiability) public {
 
-        shipments[shipmentCount] = Shipment(sID, sLiability, 0, 0)
+        shipments[shipmentCount] = Shipment(sID, sLiability, 0, 0);
         shipmentCount += 1;
     }
 
@@ -145,7 +145,7 @@ contract smartInsurancePolicy {
 
         for(uint256 i = 0; i < sensorCount; i++) {
             if (sensors[i].sensorType == lType) {
-                uint256 lID = (sensors[i].sensorID * 10) + lDepth;
+                uint256 lID = (sensors[i].ID * 10) + lDepth;
                 conditionLevels[levelCount] = ConditionLevel(lID, lMin, lMax, lWeight, 0);
                 levelCount += 1;
             }       
@@ -156,14 +156,15 @@ contract smartInsurancePolicy {
     function updateSensor (uint256 sensorID, uint256 sensorData, uint256 dataTimestamp) public {
 
         for (uint256 i = 0; i < sensorCount; i++) {
-            if (sensors[i].sensorID == sensorID) {   
+            if (sensors[i].ID == sensorID) {   
                        
                 for (uint256 k = 0; k < levelCount; k++) {
                     if ( (conditionLevels[k].dataRangeMin < sensorData) && (sensorData < conditionLevels[k].dataRangeMax) ) {
                         
-                        if (sensors[i].lastUpdate) {
-                            conditionLevel[k].excessTime += (dataTimestamp - sensors[i].sensorLastUpdate);
-                            updateReserve(conditionLevel[k].ID, conditionLevel[k].excessTime, conditionLevel[k].percentualWeight);
+                        if (sensors[i].lastUpdate != 0) {
+                            uint256 auxTime = conditionLevels[k].excessTime;
+                            conditionLevels[k].excessTime += (dataTimestamp - sensors[i].lastUpdate);
+                            updateReserve(conditionLevels[k].ID, (conditionLevels[k].excessTime - auxTime), conditionLevels[k].percentualWeight);
                         } else {
                             sensors[i].lastUpdate = dataTimestamp;
                         }
@@ -183,7 +184,7 @@ contract smartInsurancePolicy {
         for (uint256 i = 0; i < shipmentCount; i++) {
 
             if(shipments[i].ID == shipmentID) {
-                shipments[i].reserve += ((shipments[i].liability / shipments[i].numSensors) * (conditionExcessTime * conditionLevelWeight));
+                shipments[i].reserve =  shipments[i].reserve + (((shipments[i].liability/shipments[i].numSensors) * ((conditionExcessTime/60)*conditionLevelWeight))/200);
                 
                 if(shipments[i].reserve > shipments[i].liability) {
                     shipments[i].reserve = shipments[i].liability;
@@ -196,15 +197,15 @@ contract smartInsurancePolicy {
     // ID Extraction Function
     function extractDigit (uint256 number, uint256 target) public returns (uint256 extractedDigit) {
 
-        uint8 digits = 0;
-        uint256 aux = number;
+        //uint8 digits = 0;
+        //uint256 aux = number;
         
-        while (aux != 0) {
-            aux /= 10;
-            digits++;
-        }
+        //while (aux != 0) {
+          //  aux /= 10;
+        //    digits++;
+        //}
     
-        require (target < digits, "Target outside number range");
+        // require (target < digits, "Target outside number range");
         
         for (uint8 i = 0; i < target; i++) {
             number /= 10;
