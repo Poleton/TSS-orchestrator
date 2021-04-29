@@ -1,13 +1,17 @@
 package tss.orchestrator.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.web3j.protocol.core.methods.response.EthAccounts;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import tss.orchestrator.api.BlockChainRestApi;
+import tss.orchestrator.api.dto.SensorsDataDTO;
+import tss.orchestrator.service.UserRepository;
 import tss.orchestrator.utils.constants.Constants;
 import tss.orchestrator.utils.helpers.TimeHelper;
 import tss.orchestrator.service.BlockChainService;
@@ -23,79 +27,14 @@ public class BlockChainRestController implements BlockChainRestApi {
     @Autowired
     BlockChainService blockChainService;
 
-    @GetMapping(Constants.API_BLOCKCHAIN)
-    public Future<BlockChainResponseTransfer> getBlock() {
-        BlockChainResponseTransfer blockChainResponseTransfer = new BlockChainResponseTransfer();
-        Instant start = TimeHelper.start();
+    @Override
+    public ResponseEntity<Object> sendSensorsData(@RequestBody SensorsDataDTO sensorsDataDTO){
 
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                EthBlockNumber result = blockChainService.getBlockNumber();
-                blockChainResponseTransfer.setMessage(result.toString());
-            } catch (Exception e) {
-                blockChainResponseTransfer.setMessage(Constants.GENERIC_EXCEPTION);
-            }
-            return blockChainResponseTransfer;
-        }).thenApplyAsync(result -> {
-            result.setPerformance(TimeHelper.stop(start));
-            return result;
-        });
-    }
 
-    @GetMapping(Constants.API_ACCOUNTS)
-    public Future<BlockChainResponseTransfer> getAccounts() {
-        BlockChainResponseTransfer blockChainResponseTransfer = new BlockChainResponseTransfer();
-        Instant start = TimeHelper.start();
 
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                EthAccounts result = blockChainService.getEthAccounts();
-                blockChainResponseTransfer.setMessage(result.toString());
-            } catch (Exception e) {
-                blockChainResponseTransfer.setMessage(Constants.GENERIC_EXCEPTION);
-            }
-            return blockChainResponseTransfer;
+        //blockChainService.sendSensorsData();
 
-        }).thenApplyAsync(result -> {
-            result.setPerformance(TimeHelper.stop(start));
-            return result;
-        });
-    }
-
-    @GetMapping(Constants.API_TRANSACTIONS)
-    public Future<BlockChainResponseTransfer> getTransactions() {
-        BlockChainResponseTransfer blockChainResponseTransfer = new BlockChainResponseTransfer();
-        Instant start = TimeHelper.start();
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                EthGetTransactionCount result = blockChainService.getTransactionCount();
-                blockChainResponseTransfer.setMessage(result.toString());
-            } catch (Exception e) {
-                blockChainResponseTransfer.setMessage(Constants.GENERIC_EXCEPTION);
-            }
-            return blockChainResponseTransfer;
-        }).thenApplyAsync(result -> {
-            result.setPerformance(TimeHelper.stop(start));
-            return result;
-        });
-    }
-
-    @GetMapping(Constants.API_BALANCE)
-    public Future<BlockChainResponseTransfer> getBalance() {
-        BlockChainResponseTransfer blockChainResponseTransfer = new BlockChainResponseTransfer();
-        Instant start = TimeHelper.start();
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                EthGetBalance result = blockChainService.getEthBalance();
-                blockChainResponseTransfer.setMessage(result.toString());
-            } catch (Exception e) {
-                blockChainResponseTransfer.setMessage(Constants.GENERIC_EXCEPTION);
-            }
-            return blockChainResponseTransfer;
-        }).thenApplyAsync(result -> {
-            result.setPerformance(TimeHelper.stop(start));
-            return result;
-        });
+        return ResponseEntity.accepted().build();
     }
 
 }

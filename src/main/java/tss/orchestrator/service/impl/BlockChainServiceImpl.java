@@ -48,23 +48,17 @@ public class BlockChainServiceImpl implements BlockChainService {
 
     public String deployContract (SmartPolicy smartPolicy){
 
-        int contractModel = smartPolicy.getContractModel();
-
         try {
-            switch (contractModel){
-                case 1:
-                    //Deploy contract to address specified by wallet
-                    Insurance_policy contract = Insurance_policy.deploy(this.web3j,
-                            credentials,
-                            gasProvider,
-                            BigInteger.valueOf(1619647900),
-                            BigInteger.valueOf(1619747900),
-                            "hola").send();
-                    //Het the address
-                    return contract.getContractAddress();
-                default:
-                    return "F";
-            }
+
+            //Deploy contract to address specified by wallet
+            Insurance_policy contract = Insurance_policy.deploy(this.web3j,
+                    credentials,
+                    gasProvider,
+                    BigInteger.valueOf(1619647900),
+                    BigInteger.valueOf(1619747900),
+                    "hola").send();
+            //Het the address
+            return contract.getContractAddress();
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -75,16 +69,14 @@ public class BlockChainServiceImpl implements BlockChainService {
     public String sendSensorsData(SmartPolicy smartPolicy){
         try {
             String a = "";
-            switch (smartPolicy.getContractModel()){
-                case 1:
-                    Insurance_policy contract = Insurance_policy.load(
-                            smartPolicy.getContractAddress(),
-                            web3j, credentials,
-                            gasProvider);
-                    System.out.println("Load smart contract done!");
-                    contract.addSensor(BigInteger.valueOf(1),BigInteger.valueOf(1),BigInteger.valueOf(1));
-                    a = contract.toString();
-            }
+
+            Insurance_policy contract = Insurance_policy.load(
+                    smartPolicy.getContractAddress(),
+                    web3j, credentials,
+                    gasProvider);
+            System.out.println("Load smart contract done!");
+            contract.addSensor(BigInteger.valueOf(1),BigInteger.valueOf(1),BigInteger.valueOf(1));
+            a = contract.toString();
 
             return a;
         } catch(Exception e){
