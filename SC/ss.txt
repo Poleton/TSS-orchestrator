@@ -1,0 +1,485 @@
+Functions are described in the sequential order they must be executed 
+
+ 
+
+DEPLOYMENT: 
+
+ 
+
+[Contract State: None] 
+
+ 
+
+address client 
+
+address insurance 
+
+address broker 
+
+ 
+
+uint256 contractPremium 
+
+[Format: premium in decimals x 100000] 
+
+ 
+
+uint256 contractLiability 
+
+[Format: liability in decimals x 100000] 
+
+ 
+
+uint256 inceptionTimestamp 
+
+[Format: timestamp in seconds] 
+
+ 
+
+uint256 expiryTimestamp 
+
+[Format: timestamp in seconds] 
+
+ 
+
+string territorialScope 
+
+ 
+
+[Contract State: Initialized] 
+
+ 
+
+ 
+
+ADD SHIPMENT: 
+
+ 
+
+[Requires Contract State: Initialized] 
+
+ 
+
+uint256 shipmentID  
+
+[Format: value range 0 – 9] 
+
+ 
+
+uint256 shipmentLiability  
+
+[Format: liability in decimals x 100000] 
+
+ 
+
+[Contract State: Initialized] 
+
+ 
+
+ 
+
+ADD SENSOR: 
+
+ 
+
+[Requires Contract State: Initialized] 
+
+ 
+
+uint256 sensorID 
+
+[Format: value range 0 – 9] 
+
+ 
+
+uint256 sensorType  
+
+[Format: value range 0 – 3] 
+
+(0: Temperature   1: Pressure 
+
+2: Acceleration   3: Humidity) 
+
+ 
+
+[Contract State: Initialized] 
+
+ 
+
+ 
+
+CONTRACT CONDITIONLEVEL: 
+
+ 
+
+[Requires Contract State: Initialized] 
+
+ 
+
+uint256 levelDepth 
+
+[Format: value range 0 – 9] 
+
+ 
+
+uint256 levelType  
+
+[Format: value range 0 – 3] 
+
+(0: Temperature,   1: Pressure, 
+
+2: Acceleration,   3: Humidity) 
+
+ 
+
+uint256 levelMinimumRange 
+
+[Format: data range minimum value in decimals x 100000] 
+
+ 
+
+uint256 levelMaximumRange 
+
+[Format: data range maximum value in decimals x 100000] 
+
+ 
+
+uint256 percentualWeight 
+
+[Format: % of compensation per minute] 
+
+ 
+
+[Contract State: Initialized] 
+
+ 
+
+ 
+
+CONTRACT FUNDING: 
+
+ 
+
+[Requires Contract State: Initialized] 
+
+ 
+
+// in progress 
+
+ 
+
+[Contract State: Funded] 
+
+ 
+
+ 
+
+CONTRACT ACTIVATION: 
+
+ 
+
+[Requires Contract State: Funded] 
+
+ 
+
+uint256 activationTimestamp 
+
+ 
+
+[Contract State: Activated] 
+
+ 
+
+ 
+
+UPDATE SENSOR: 
+
+ 
+
+[Requires Contract State: Activated] 
+
+ 
+
+uint256 sensorID 
+
+[Format: value range 0 – 99] 
+
+(1st Digit : Shipment ID, 
+
+2nd Digit : Sensor ID) 
+
+ 
+
+uint256  sensorData 
+
+[Format: data value in decimals x 100000] 
+
+ 
+
+uint256 dataTimeStamp 
+
+[Format: timestamp in seconds] 
+
+ 
+
+[Contract State: Activated] 
+
+ 
+
+ 
+
+CONTRACT DEACTIVATION: 
+
+ 
+
+[Requires Contract State: Activated] 
+
+ 
+
+uint256 deactivationTimestamp 
+
+ 
+
+[Transfers locked funds to the addresses according to the final contract reserve] 
+
+[Returns the final value of the contract reserve] 
+
+[Contract self destructs] 
+
+ 
+
+[Contract State: Deactivated] 
+
+ 
+
+ 
+
+FUNCTIONS BELOW ARE ONLY ACCESSIBLE BY THE CONTRACT ITSELF 
+
+ 
+
+UPDATE RESERVE: 
+
+ 
+
+uint256 conditionLevelID 
+
+[Format: value range 0 – 999] 
+
+(1st Digit : Shipment ID, 
+
+2nd Digit : Sensor ID, 
+
+3rd Digit : LevelDepth ID) 
+
+ 
+
+uint256 conditionExcessTime 
+
+[Format: excess time in seconds] 
+
+ 
+
+uint256 percentualWeight 
+
+[Format: % of compensation per minute] 
+
+ 
+
+ 
+
+ 
+
+ 
+
+} 
+
+ 
+
+// Shipment Parametrization  
+
+ 
+
+uint256 public shipmentCount = 0; 
+
+mapping (uint256 => Shipment) public shipments; 
+
+[Format: 0 – 9] 
+
+ 
+
+ 
+
+ 
+
+struct Shipment {  
+
+uint256 ID;  
+
+uint256 liability;  
+
+uint256 reserve;  
+
+uint256 numSensors;  
+
+} 
+
+ 
+
+struct Sensor { 
+
+ uint256 ID;  
+
+uint256 sensorType;  
+
+uint256 lastUpdate;  
+
+} 
+
+ 
+
+// Conditions Parametrization  
+
+ 
+
+uint256 public conditionLevelCount = 0;  
+
+mapping (uint256 => ConditionLevel)  
+
+public conditionLevels; 
+
+ 
+
+struct ConditionLevel {  
+
+uint256 ID; int256 dataRangeMin;  
+
+int256 dataRangeMax;  
+
+uint256 percentualWeight;  
+
+uint256 excessTime;  
+
+} 
+
+ 
+
+product 
+
+ 
+
+duration = term insurance (not renewable) [constant parameter] 
+
+ 
+
+number_vehicles [integer] 
+
+number of vehicles in use in this shipment 
+
+ 
+
+maximum_insured_sum [integer] 
+
+maximum limit of the insurer's liability 
+
+ 
+
+reserve [integer]  
+
+amount of the compensation quantity that is already to be claimed due to shipment damages 
+
+ 
+
+inception_timestamp [integer] 
+
+timestamp of the instant the policy was created 
+
+ 
+
+activation_timestamp [integer] 
+
+timestamp of the instant the shipment started and therefore instant the policy became active 
+
+ 
+
+expiry_timestamp [integer]  // Lo ponen los de angular 
+
+timestamp of the instant the policy is set to expire 
+
+ 
+
+deactivation_timestamp [integer] 
+
+timestamp of the instant the shipment was delivered/ended and therefore instant the policy became inactive 
+
+ 
+
+territorial_scope [string] 
+
+countries where the delivery will take place 
+
+ 
+
+means_of_transportation [string] 
+
+water / land / air 
+
+ 
+
+num_sensors [integer] 
+
+quantity of sensors on the shipment goods 
+
+ 
+
+conditions [dictionary ( values range –  % reserve per min )] 
+
+sets the conditions in which the shipped goods will have to be compensated 
+
+all time units in the conditions measurements are in minutes 
+
+ 
+
+processed_sensor_updates [integer] 
+
+accounts the number of updates received by the sensors (for a posterior performance analysis) 
+
+ 
+
+sensor_updates_interval [integer] 
+
+sets every how many minutes a sensor update is expected (to detect a communication failure or to average excess updates data) 
+
+ 
+
+premium_quantity [integer] 
+
+the quantity in the specified currency to be paid by the insured in order to activate the SC 
+
+ 
+
+insurer_address [integer] 
+
+blockchain wallet address of the insurer 
+
+ 
+
+insured_address [integer] 
+
+blockchain wallet address of the insured 
+
+ 
+
+contract_state [integer] 
+
+represents the current state of the smart contract 
+
+State 0: SC created but not active 
+
+State 1: SC ready to be activated 
+
+State 2: SC active (delivery on progress) 
+
+State 3: SC active but compensation  
+
+ 
