@@ -1,6 +1,11 @@
 package tss.orchestrator.service.impl;
 
 
+import org.web3j.abi.datatypes.Int;
+import org.web3j.tx.gas.ContractGasProvider;
+import org.web3j.tx.gas.StaticGasProvider;
+import tss.orchestrator.models.SmartPolicy;
+import tss.orchestrator.models.contracts.Insurance_policy;
 import tss.orchestrator.models.contracts.SmartContract;
 import tss.orchestrator.service.BlockChainService;
 import tss.orchestrator.utils.constants.Constants;
@@ -23,93 +28,71 @@ import org.web3j.tx.ManagedTransaction;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BlockChainServiceImpl implements BlockChainService {
 
-    private Web3j web3j = Web3j.build(new HttpService());
+    private Web3j web3j;
+    private Credentials credentials;
+    private ContractGasProvider gasProvider;
 
-    //Create and Init the default Web3J connection
-    public void customInit(String provider) {
-        this.web3j = Web3j.build(new HttpService(provider));
+    public BlockChainServiceImpl(String privateKey){
+        this.web3j = Web3j.build(new HttpService(Constants.HTTP_PROVIDER));
+        this.credentials = Credentials.create (privateKey);
+        this.gasProvider = new StaticGasProvider(BigInteger.valueOf(Constants.GAS_PRICE),
+                BigInteger.valueOf(Constants.GAS_LIMIT));
     }
 
-    //Convert to and from supplied contract ABI bytecode
-    public static String toBinary(String bytecode) {
-        return bytecode.replaceFirst("^0x", "");
-    }
+    public String deployContract (SmartPolicy smartPolicy){
 
-    public static String toByteCode(String binary) {
-        return "0x" + binary;
-    }
-
-    public EthBlockNumber getBlockNumber() {
-        EthBlockNumber result = new EthBlockNumber();
-        try {
-            result = this.web3j.ethBlockNumber().sendAsync().get();
-        } catch (Exception ex) {
-            System.out.println(Constants.GENERIC_EXCEPTION);
-        }
-        return result;
-    }
-
-    public EthAccounts getEthAccounts() {
-        EthAccounts result = new EthAccounts();
-        try {
-            result = this.web3j.ethAccounts().sendAsync().get();
-        } catch (Exception ex) {
-            System.out.println(Constants.GENERIC_EXCEPTION);
-        }
-        return result;
-    }
-
-    public EthGetTransactionCount getTransactionCount() {
-        EthGetTransactionCount result = new EthGetTransactionCount();
-        try {
-            result = this.web3j.ethGetTransactionCount(Constants.DEFAULT_ADDRESS, DefaultBlockParameter.valueOf("latest")).sendAsync().get();
-        } catch (Exception ex) {
-            System.out.println(Constants.GENERIC_EXCEPTION);
-        }
-        return result;
-    }
-
-    public EthGetBalance getEthBalance() {
-        EthGetBalance result = new EthGetBalance();
-        try {
-            result = this.web3j.ethGetBalance(Constants.DEFAULT_ADDRESS, DefaultBlockParameter.valueOf("latest")).sendAsync().get();
-        } catch (Exception ex) {
-            System.out.println(Constants.GENERIC_EXCEPTION);
-        }
-        return result;
-    }
-
-    public String fromScratchContractExample() {
-
-        String contractAddress = "";
+        int contractModel = smartPolicy.getContractModel();
 
         try {
-            //Create a wallet
-            WalletUtils.generateNewWalletFile("PASSWORD", new File("/path/to/destination"), true);
-            //Load the credentials from it
-            Credentials credentials = WalletUtils.loadCredentials("PASSWORD", "/path/to/walletfile");
-
-            //Deploy contract to address specified by wallet
-            SmartContract contract = SmartContract.deploy(this.web3j,
-                    credentials,
-                    ManagedTransaction.GAS_PRICE,
-                    Contract.GAS_LIMIT).send();
-
-            //Het the address
-            contractAddress = contract.getContractAddress();
+            switch (contractModel){
+                case 1:
+                    //Deploy contract to address specified by wallet
+                    Insurance_policy contract = Insurance_policy.deploy(this.web3j,
+                            credentials,
+                            gasProvider,
+                            BigInteger.valueOf(1619647900),
+                            BigInteger.valueOf(1619747900),
+                            "hola").send();
+                    //Het the address
+                    return contract.getContractAddress();
+                default:
+                    return "F";
+            }
 
         } catch (Exception ex) {
-            System.out.println(Constants.PLEASE_SUPPLY_REAL_DATA);
-            return Constants.PLEASE_SUPPLY_REAL_DATA;
+            ex.printStackTrace();
+            return "F";
         }
-        return contractAddress;
     }
+
+    public String sendSensorsData(SmartPolicy smartPolicy){
+        try {
+            String a = "";
+            switch (smartPolicy.getContractModel()){
+                case 1:
+                    Insurance_policy contract = Insurance_policy.load(
+                            smartPolicy.getContractAddress(),
+                            web3j, credentials,
+                            gasProvider);
+                    System.out.println("Load smart contract done!");
+                    contract.addSensor(BigInteger.valueOf(1),BigInteger.valueOf(1),BigInteger.valueOf(1));
+                    a = contract.toString();
+            }
+
+            return a;
+        } catch(Exception e){
+            e.printStackTrace();
+            return "F";
+        }
+    }
+
 
     @Async
     public String sendTx() {

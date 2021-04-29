@@ -13,5 +13,22 @@ public class SmartPolicy {
     private Integer smartContractId;
     private Integer policyNumber;
     private Integer blockchainId;
+    private Integer contractModel;
+    private String contractAddress;
 
+    public String getContractAddress() {
+        return contractAddress;
+    }
+
+    public void setContractAddress(String contractAddress) {
+        this.contractAddress = contractAddress;
+    }
+
+    public Integer getContractModel() {
+        return contractModel;
+    }
+
+    public void setContractModel(Integer contractModel) {
+        this.contractModel = contractModel;
+    }
 }

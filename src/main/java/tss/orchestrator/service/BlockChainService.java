@@ -4,13 +4,9 @@ import org.web3j.protocol.core.methods.response.EthAccounts;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import tss.orchestrator.models.SmartPolicy;
 
 public interface BlockChainService {
-    public EthBlockNumber getBlockNumber();
-
-    public EthAccounts getEthAccounts();
-
-    public EthGetTransactionCount getTransactionCount();
-
-    public EthGetBalance getEthBalance();
+    public String deployContract (SmartPolicy smartPolicy);
+    public String sendSensorsData (SmartPolicy smartPolicy);
 }
