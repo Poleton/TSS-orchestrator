@@ -1,10 +1,14 @@
 package tss.orchestrator.models;
 
+import tss.orchestrator.api.dto.UserDTO;
+
 import javax.persistence.*;
 import java.util.List;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Entity(name ="User") // This tells Hibernate to make a table out of this class
+@Table(name = "user")
 public class User {
+
     @Id
     @GeneratedValue
     private Integer id;
@@ -16,18 +20,19 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Policy> policies;
 
+    @OneToMany(mappedBy = "user")
+    private List<SmartPolicy> smartPolicies;
+
     //@OneToMany(mappedBy = "user")
     //private List<SmartPolicy> smartPolicies;
+    public User(UserDTO user) {
+        super();
+        this.name = user.getName();
+        this.password = user.getPassword();
+    }
 
     public User() {
 
-    }
-
-    public User(Integer id, String name, String password) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.password = password;
     }
 
     public Integer getId() {
@@ -61,6 +66,10 @@ public class User {
     public void setPolicies(List<Policy> policies) {
         this.policies = policies;
     }
+
+    public List<SmartPolicy> getSmartPolicies() { return smartPolicies;}
+
+    public void setSmartPolicies(List<SmartPolicy> smartPolicies) {this.smartPolicies = smartPolicies; };
 
     @Override
     public String toString() {
