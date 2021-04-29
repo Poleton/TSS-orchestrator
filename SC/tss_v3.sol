@@ -100,6 +100,7 @@ contract smartInsurancePolicy {
     function deactivateContract (uint256 deactivationT) public returns (uint256) {
         // Llama a las funciones que toquen que realizaran los pagos a las addresses que toquen segun 
         // el calculo de la reserve obtenido, pagando tamb el premium
+        // Destruir contrato
 
         require (contractState == State.Activated , 'Deactivation Requirements Not Completed');
         parameters.deactivationTimestamp = deactivationT;
