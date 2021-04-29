@@ -14,4 +14,5 @@ public interface BlockChainRestApi {
 
     @PostMapping(Constants.API_SENSORS)
     public ResponseEntity<Object> sendSensorsData(@RequestBody SensorsDataDTO sensorsDataDTO);
+
 }

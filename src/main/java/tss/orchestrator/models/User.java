@@ -17,6 +17,8 @@ public class User {
 
     private String password;
 
+    private String privateKey;
+
     @OneToMany(mappedBy = "user")
     private List<Policy> policies;
 
@@ -33,6 +35,14 @@ public class User {
 
     public User() {
 
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
     }
 
     public Integer getId() {

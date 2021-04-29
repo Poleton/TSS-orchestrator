@@ -17,6 +17,8 @@ public class SmartPolicy<user> {
     @GeneratedValue
     private Integer smartId;
 
+    private String contractAddress;
+
     private String holderName;
     private String territorialScope;
     private String meansOfTransport;
@@ -88,6 +90,13 @@ public class SmartPolicy<user> {
 
     }
 
+    public String getContractAddress() {
+        return contractAddress;
+    }
+
+    public void setContractAddress(String contractAddress) {
+        this.contractAddress = contractAddress;
+    }
 
     public Integer getSmartId() {
         return smartId;
