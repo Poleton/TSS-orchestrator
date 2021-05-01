@@ -19,7 +19,7 @@ This is a block from the TSS project which consists in:
 
 ## SETTING UP
 
-### MySQL enviroment
+### MySQL environment
 
 To install MySQL follow [this](https://myaccount.google.com/u/0/lesssecureapps?pli=1).  
 
@@ -54,6 +54,19 @@ In the _src/main/resources/application.properties_ file:
     spring.datasource.password = tss1234
     spring.jpa.hibernate.ddl-auto = update
     spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
+
+
+### Ethereum Blockchain Simulation
+
+We will be using the _Truffle Suite_ environment:
+
+For the blockchain simulation [install Ganache](https://www.trufflesuite.com/ganache).
+
+For 
+
+    npm install truffle -g
+
+
 
 ****
 
