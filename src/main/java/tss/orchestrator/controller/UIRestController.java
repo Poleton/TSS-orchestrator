@@ -14,6 +14,7 @@ import tss.orchestrator.models.User;
 import tss.orchestrator.service.PolicyRepository;
 import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
+import tss.orchestrator.service.impl.BlockChainServiceImpl;
 
 import java.net.URI;
 import java.util.List;
@@ -30,6 +31,9 @@ public class UIRestController implements UIRestApi {
 
     @Autowired
     private SmartPolicyRepository smartPolicyRepository;
+
+    @Autowired
+    private BlockChainServiceImpl blockChainService;
 
     @Override
     public List<Policy> retrieveAllPolicies(@PathVariable int userId) {
@@ -70,10 +74,15 @@ public class UIRestController implements UIRestApi {
 
         SmartPolicy smartPolicy = new SmartPolicy(smartPolicyDTO,policy.get(),user.get());
 
+        blockChainService.initialize(user.get().getPrivateKey());
+
+        String contractAddress = blockChainService.deployContract(smartPolicy);
+
+        smartPolicy.setContractAddress(contractAddress);
+
         smartPolicyRepository.save(smartPolicy);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(smartPolicy.getSmartId()).toUri();
-
 
         return ResponseEntity.created(location).build();
 

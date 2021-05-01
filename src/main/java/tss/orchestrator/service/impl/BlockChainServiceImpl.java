@@ -7,6 +7,7 @@ import org.web3j.tx.gas.StaticGasProvider;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.models.contracts.Insurance_policy;
 import tss.orchestrator.models.contracts.SmartContract;
+import tss.orchestrator.models.contracts.SmartInsurancePolicy;
 import tss.orchestrator.service.BlockChainService;
 import tss.orchestrator.utils.constants.Constants;
 import org.springframework.scheduling.annotation.Async;
@@ -39,7 +40,7 @@ public class BlockChainServiceImpl implements BlockChainService {
     private Credentials credentials;
     private ContractGasProvider gasProvider;
 
-    public BlockChainServiceImpl(String privateKey){
+    public void initialize(String privateKey){
         this.web3j = Web3j.build(new HttpService(Constants.HTTP_PROVIDER));
         this.credentials = Credentials.create (privateKey);
         this.gasProvider = new StaticGasProvider(BigInteger.valueOf(Constants.GAS_PRICE),
@@ -51,9 +52,14 @@ public class BlockChainServiceImpl implements BlockChainService {
         try {
 
             //Deploy contract to address specified by wallet
-            Insurance_policy contract = Insurance_policy.deploy(this.web3j,
+            SmartInsurancePolicy contract = SmartInsurancePolicy.deploy(this.web3j,
                     credentials,
                     gasProvider,
+                    Constants.ADDRESS_ACCOUNT,
+                    Constants.ADDRESS_ACCOUNT,
+                    Constants.ADDRESS_ACCOUNT,
+                    BigInteger.valueOf(200),
+                    BigInteger.valueOf(1000),
                     BigInteger.valueOf(1619647900),
                     BigInteger.valueOf(1619747900),
                     "hola").send();
@@ -70,12 +76,12 @@ public class BlockChainServiceImpl implements BlockChainService {
         try {
             String a = "";
 
-            Insurance_policy contract = Insurance_policy.load(
+            SmartInsurancePolicy contract = SmartInsurancePolicy.load(
                     smartPolicy.getContractAddress(),
                     web3j, credentials,
                     gasProvider);
             System.out.println("Load smart contract done!");
-            contract.addSensor(BigInteger.valueOf(1),BigInteger.valueOf(1),BigInteger.valueOf(1));
+            contract.addShipment(BigInteger.valueOf(1),BigInteger.valueOf(500)).send();
             a = contract.toString();
 
             return a;
@@ -83,34 +89,5 @@ public class BlockChainServiceImpl implements BlockChainService {
             e.printStackTrace();
             return "F";
         }
-    }
-
-
-    @Async
-    public String sendTx() {
-        String transactionHash = "";
-
-        try {
-            List inputParams = new ArrayList();
-            List outputParams = new ArrayList();
-            Function function = new Function("fuctionName", inputParams, outputParams);
-
-            String encodedFunction = FunctionEncoder.encode(function);
-
-            BigInteger nonce = BigInteger.valueOf(100);
-            BigInteger gasprice = BigInteger.valueOf(100);
-            BigInteger gaslimit = BigInteger.valueOf(100);
-
-            Transaction transaction = Transaction.createFunctionCallTransaction("FROM_ADDRESS", nonce, gasprice, gaslimit, "TO_ADDRESS", encodedFunction);
-
-            org.web3j.protocol.core.methods.response.EthSendTransaction transactionResponse = web3j.ethSendTransaction(transaction).sendAsync().get();
-            transactionHash = transactionResponse.getTransactionHash();
-
-        } catch (Exception ex) {
-            System.out.println(Constants.PLEASE_SUPPLY_REAL_DATA);
-            return Constants.PLEASE_SUPPLY_REAL_DATA;
-        }
-
-        return transactionHash;
     }
 }
