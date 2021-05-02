@@ -20,7 +20,8 @@ public class Policy{
     private String meansOfTransport;
     private int numSensors;
     private String conditions;
-    private Timestamp creationDate;
+    private long inceptionTimestamp;
+    private long expiryTimestamp;
 
 
 
@@ -44,7 +45,22 @@ public class Policy{
         this.meansOfTransport = policyDTO.getMeansOfTransport();
         this.numSensors = policyDTO.getNumSensors();
         this.user = user;
-        this.creationDate = new Timestamp(System.currentTimeMillis());
+    }
+
+    public long getInceptionTimestamp() {
+        return inceptionTimestamp;
+    }
+
+    public void setInceptionTimestamp(long inceptionTimestamp) {
+        this.inceptionTimestamp = inceptionTimestamp;
+    }
+
+    public long getExpiryTimestamp() {
+        return expiryTimestamp;
+    }
+
+    public void setExpiryTimestamp(long expiryTimestamp) {
+        this.expiryTimestamp = expiryTimestamp;
     }
 
     public Integer getId() {
@@ -125,10 +141,6 @@ public class Policy{
 
     public void setProduct(String product) {
         this.product = product;
-    }
-
-    public Timestamp getCreationDate() {
-        return creationDate;
     }
 
     @Override

@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 @Getter @Setter
 public class SmartPolicyDTO {
@@ -23,8 +24,8 @@ public class SmartPolicyDTO {
 
     private Integer shipmentID;
     private Integer shipmentLiability;
-    private Integer sensorID;
-    private Integer sensorType;
+    private List<Integer> sensorID;
+    private List<Integer> sensorType;
     private Integer levelDepth;
     private Integer levelType;
     private Integer levelMinimumRange;

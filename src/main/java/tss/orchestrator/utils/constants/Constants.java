@@ -30,4 +30,12 @@ public class  Constants {
 
     public static final String DEFAULT_ADDRESS = "0x281055afc982d96fab65b3a49cac8b878184cb16";
     public static final String DEFAULT_CONTRACT_ADDRESS = "00000000000000000000";
+
+    public enum ContractState {
+        NONE,
+        INITIALIZED,
+        FUNDED,
+        ACTIVATED,
+        DEACTIVATED
+    }
 }

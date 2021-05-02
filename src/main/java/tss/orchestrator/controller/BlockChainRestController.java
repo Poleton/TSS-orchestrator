@@ -32,12 +32,10 @@ import java.util.concurrent.Future;
 public class BlockChainRestController implements BlockChainRestApi {
 
     @Autowired
-    private BlockChainServiceImpl blockChainService;
+    private BlockChainService blockChainServiceImpl;
 
     @Autowired
     private UserRepository userRepository;
-
-
 
     @Override
     public ResponseEntity<Object> sendSensorsData(@RequestBody SensorsDataDTO sensorsDataDTO){
@@ -53,11 +51,13 @@ public class BlockChainRestController implements BlockChainRestApi {
             }
         }
 
-        blockChainService.initialize(userOptional.get().getPrivateKey());
+        blockChainServiceImpl.initialize(userOptional.get().getPrivateKey());
 
-        blockChainService.sendSensorsData(smartPolicies.get(listId));
+        blockChainServiceImpl.sendSensorsData(smartPolicies.get(listId), sensorsDataDTO);
 
         return ResponseEntity.accepted().build();
     }
+
+
 
 }
