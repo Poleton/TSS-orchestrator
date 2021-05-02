@@ -11,7 +11,7 @@ public class  Constants {
     public static final String API_USERS = "/users";
     public static final String API_POLICIES = "/{userId}/api/policies";
     public static final String API_SMART_POLICIES = "/{userId}/api/smart-policies";
-    public static final String API_SMART_POLICY = "/{userId}/api/smart-policies/{smartId}";
+    public static final String API_SMART_POLICY_ALERT = "/{userId}/api/smart-policies/{smartId}/alerts";
 
     //BlockChain Paths
     public static final String API_BLOCKCHAIN = "/blockchain";

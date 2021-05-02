@@ -62,10 +62,42 @@ We will be using the _Truffle Suite_ environment:
 
 For the blockchain simulation [install Ganache](https://www.trufflesuite.com/ganache).
 
-For 
+We are using this configuration:
 
-    npm install truffle -g
+    GAS PRICE: 200000000
+    GAS LIMIT: 6721975
+    HOSTNAME: 127.0.0.1
+    PORT NUMBER: 7545
 
+
+#### Using your own Contracts
+
+This step is not necessary if you just want to use our implementation. 
+Otherwise, if you are willing to use a different smart contract:
+
+1. Install web3j CLI:
+   
+        $ curl -L get.web3j.io | sh && source ~/.web3j/source.sh        
+
+2. Install truffle:
+
+        $ npm install truffle -g
+
+3. Create a truffle project or use the already created in _/TSS-orchestrator/truffle/_.
+
+        $ truffle init 
+
+4. Put your _contract.sol_ in the _/TSS-orchestrator/truffle/contracts/_ and compile
+   (you should be at the truffle project directory):
+
+        $ truffle compile
+
+5. A _yourContract.json_ should have been generated in the
+   _/TSS-orchestrator/truffle/build/contracts/_, so now convert it into a Wrapper (.java)
+   
+        $ web3j generate truffle -t path/to/yourContract.json -o path/to/src/main/java/tss/orchestrator/models/contracts -p tss.orchestrator.models.contracts 
+
+6. Finally, modify the methods at the BlockChainServiceImpl class to use your contract.
 
 
 ****
@@ -75,11 +107,12 @@ For
 You will have to create by default the users, this is made automatically adding
 in the _src/main/resources/data.sql_:
 
-    insert into user values (1, 'user1', '1234');
+    insert into user values (1, 'user1', '1234', '{privateKey}');
 
->Put all necessary User values.
+>Put all necessary User values.  
+>Change the _{privateKey}_ to your Ganache's first account private key.
 
-and uncommenting the last line in the _src/main/resources/application.properties_:
+Uncomment the last line in the _src/main/resources/application.properties_:
 
     spring.datasource.initialization-mode=always
 

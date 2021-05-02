@@ -18,7 +18,6 @@ public interface UIRestApi {
     @GetMapping(Constants.API_POLICIES)
     List<Policy> retrieveAllPolicies(@PathVariable int userId);
 
-
     @PostMapping(Constants.API_POLICIES)
     ResponseEntity<Object> createPolicy(@PathVariable int userId, @RequestBody PolicyDTO policyDTO);
 

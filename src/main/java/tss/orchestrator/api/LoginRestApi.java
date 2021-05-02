@@ -16,8 +16,5 @@ public interface LoginRestApi {
     //ResponseEntity<Object> login(@RequestBody UserDTO user);
     ResponseEntity<Integer> login(@RequestBody UserDTO user);
 
-
-
-
 }
 

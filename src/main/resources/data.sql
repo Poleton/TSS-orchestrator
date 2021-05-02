@@ -1,1 +1,1 @@
-insert into user values (1, 'user1', '1234', '7396c32490d627a95d33c17db86b4897fe6770026bbe2f10f3403a236302af22');
+insert into user values (1, 'user1', '1234', '06536975ddd3d7f46bc9a4c533386a782debf72164ea42c993811786c208800b');

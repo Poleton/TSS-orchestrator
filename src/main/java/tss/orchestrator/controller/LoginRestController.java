@@ -16,8 +16,7 @@ import tss.orchestrator.service.UserRepository;
 import java.util.List;
 import java.util.Optional;
 @RestController
-public class LoginController implements LoginRestApi {
-
+public class LoginRestController implements LoginRestApi {
 
     @Autowired
     private UserRepository userRepository;
