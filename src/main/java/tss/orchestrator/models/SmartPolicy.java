@@ -18,7 +18,7 @@ public class SmartPolicy<user> {
 
     @Id
     @GeneratedValue
-    private Integer smartId;
+    private Integer id;
 
     //POLICY
     private String holderName;

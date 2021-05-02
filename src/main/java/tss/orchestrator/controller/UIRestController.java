@@ -1,7 +1,6 @@
 package tss.orchestrator.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -82,7 +81,7 @@ public class UIRestController implements UIRestApi {
 
         smartPolicyRepository.save(smartPolicy);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(smartPolicy.getSmartId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(smartPolicy.getId()).toUri();
 
         return ResponseEntity.created(location).build();
 
