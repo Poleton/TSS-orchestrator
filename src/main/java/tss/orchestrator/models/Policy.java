@@ -1,6 +1,9 @@
 package tss.orchestrator.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import tss.orchestrator.api.dto.PolicyDTO;
 
 import javax.persistence.*;
@@ -8,6 +11,7 @@ import java.sql.Timestamp;
 
 
 @Entity
+@Getter @Setter @NoArgsConstructor
 public class Policy{
 
     @Id
@@ -20,7 +24,8 @@ public class Policy{
     private String meansOfTransport;
     private int numSensors;
     private String conditions;
-    private Timestamp creationDate;
+    private Timestamp inceptionTimestamp;
+
 
 
 
@@ -29,10 +34,6 @@ public class Policy{
     private User user;
 
 
-
-    public Policy(){
-
-    }
 
     public Policy (PolicyDTO policyDTO, User user){
         //super();
@@ -44,91 +45,7 @@ public class Policy{
         this.meansOfTransport = policyDTO.getMeansOfTransport();
         this.numSensors = policyDTO.getNumSensors();
         this.user = user;
-        this.creationDate = new Timestamp(System.currentTimeMillis());
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return holderName;
-    }
-
-    public void setName(String name) {
-        this.holderName = name;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public String getTerritorialScope() {
-        return territorialScope;
-    }
-
-    public void setTerritorialScope(String territorialScope) {
-        this.territorialScope = territorialScope;
-    }
-
-    public String getMeansOfTransport() {
-        return meansOfTransport;
-    }
-
-    public void setMeansOfTransport(String meansOfTransport) {
-        this.meansOfTransport = meansOfTransport;
-    }
-
-    public int getNumSensors() {
-        return numSensors;
-    }
-
-    public void setNumSensors(int numSensors) {
-        this.numSensors = numSensors;
-    }
-
-    public String getConditions() {
-        return conditions;
-    }
-
-    public void setConditions(String conditions) {
-        this.conditions = conditions;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getHolderName() {
-        return holderName;
-    }
-
-    public void setHolderName(String holderName) {
-        this.holderName = holderName;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(String product) {
-        this.product = product;
-    }
-
-    public Timestamp getCreationDate() {
-        return creationDate;
+        this.inceptionTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     @Override

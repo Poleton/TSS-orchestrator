@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import tss.orchestrator.api.dto.PolicyDTO;
 import tss.orchestrator.api.dto.SmartContractDTO;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
+import tss.orchestrator.models.Alert;
 import tss.orchestrator.models.Policy;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.utils.constants.Constants;
@@ -27,6 +28,9 @@ public interface UIRestApi {
 
     @GetMapping(Constants.API_SMART_POLICIES)
     List<SmartPolicy> retrieveAllSmartPolicies(@PathVariable int userId) throws Exception;
+
+    @GetMapping(Constants.API_SMART_POLICY_ALERT)
+    ResponseEntity<List<Alert>> getAlerts(@PathVariable("userId") int userId, @PathVariable("smartId") int smartId) throws Exception;
 
 
 }

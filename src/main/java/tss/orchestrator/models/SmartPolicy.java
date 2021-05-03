@@ -7,6 +7,7 @@ import lombok.Setter;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -58,6 +59,9 @@ public class SmartPolicy<user> {
     @JsonIgnore
     private User user;
 
+    @OneToMany(mappedBy = "smartPolicy")
+    private List<Alert> alerts;
+
 
     public SmartPolicy(SmartPolicyDTO smartPolicyDTO, Policy policy, User user) {
         //policy parameters
@@ -69,7 +73,7 @@ public class SmartPolicy<user> {
         this.meansOfTransport = policy.getMeansOfTransport();
         this.numSensors = policy.getNumSensors();
         this.conditions = policy.getConditions();
-        this.inception_timestamp = policy.getCreationDate();
+        this.inception_timestamp = policy.getInceptionTimestamp();
         this.product = policy.getProduct();
 
         //SmartPolicy Parameters

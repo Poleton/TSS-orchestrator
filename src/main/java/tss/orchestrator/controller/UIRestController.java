@@ -2,12 +2,14 @@ package tss.orchestrator.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tss.orchestrator.api.UIRestApi;
 import tss.orchestrator.api.dto.PolicyDTO;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
+import tss.orchestrator.models.Alert;
 import tss.orchestrator.models.Policy;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.models.User;
@@ -34,6 +36,7 @@ public class UIRestController implements UIRestApi {
 
     @Autowired
     private BlockChainServiceImpl blockChainService;
+
 
     @Override
     public List<Policy> retrieveAllPolicies(@PathVariable int userId) {
@@ -94,5 +97,21 @@ public class UIRestController implements UIRestApi {
         if(user.isPresent()){
             return user.get().getSmartPolicies();
         }else throw new Exception("Missing user");
+    }
+
+    @Override
+    public ResponseEntity<List<Alert>> getAlerts(int userId, int smartId) throws Exception {
+        Optional<User> user = userRepository.findById(userId);
+        Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartId);
+
+        if(user.isPresent() && smartPolicy.isPresent()){
+            return new ResponseEntity<>(smartPolicy.get().getAlerts(),HttpStatus.OK);
+        }
+        else{
+            throw new Exception("User or SmartPolicy not found");
+        }
+
+
+
     }
 }
