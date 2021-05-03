@@ -14,6 +14,7 @@ import tss.orchestrator.service.PolicyRepository;
 import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
 import tss.orchestrator.service.impl.BlockChainServiceImpl;
+import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.net.URI;
 import java.util.List;
@@ -75,9 +76,10 @@ public class UIRestController implements UIRestApi {
 
         blockChainService.initialize(user.get().getPrivateKey());
 
-        String contractAddress = blockChainService.deployContract(smartPolicy);
+        BlockChainResponseTransfer responseTransfer = blockChainService.deployContract(smartPolicy);
 
-        smartPolicy.setContractAddress(contractAddress);
+        smartPolicy.setContractAddress(responseTransfer.getContractAddress());
+        smartPolicy.setState(responseTransfer.getState());
 
         smartPolicyRepository.save(smartPolicy);
 

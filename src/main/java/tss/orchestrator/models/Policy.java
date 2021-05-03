@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import tss.orchestrator.api.dto.PolicyDTO;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-
 
 @Entity
 public class Policy{
@@ -23,13 +21,9 @@ public class Policy{
     private long inceptionTimestamp;
     private long expiryTimestamp;
 
-
-
     @ManyToOne(fetch=FetchType.LAZY)
     @JsonIgnore
     private User user;
-
-
 
     public Policy(){
 

@@ -11,6 +11,7 @@ import tss.orchestrator.models.User;
 import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
 import tss.orchestrator.service.BlockChainService;
+import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,20 +35,22 @@ public class BlockChainRestController implements BlockChainRestApi {
 
         List<SmartPolicy> smartPolicies = userOptional.get().getSmartPolicies();
 
-        int listId = 0;
+        SmartPolicy smartPolicy = null;
         for(int i = 0; i < smartPolicies.size(); i++){
             if(smartPolicies.get(i).getContractAddress() == sensorsDataDTO.getContractAddress()){
-                listId = i;
+                smartPolicy = smartPolicies.get(i);
             }
         }
 
         blockChainServiceImpl.initialize(userOptional.get().getPrivateKey());
 
-        blockChainServiceImpl.sendSensorsData(smartPolicies.get(listId), sensorsDataDTO);
+        BlockChainResponseTransfer responseTransfer = blockChainServiceImpl.sendSensorsData(smartPolicy, sensorsDataDTO);
+
+        if (smartPolicy.getState() != responseTransfer.getState()){
+            smartPolicyRepository.setState(smartPolicy.getId(), responseTransfer.getState());
+        }
 
         return ResponseEntity.accepted().build();
     }
-
-
 
 }
