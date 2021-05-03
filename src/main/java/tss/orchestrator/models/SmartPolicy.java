@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
+import tss.orchestrator.utils.constants.Constants;
 
-import java.sql.Timestamp;
 import java.util.List;
-
 import javax.persistence.*;
 
 @Entity
@@ -18,7 +17,7 @@ public class SmartPolicy<user> {
 
     @Id
     @GeneratedValue
-    private Integer smartId;
+    private Integer id;
 
     //POLICY
     private String holderName;
@@ -28,7 +27,7 @@ public class SmartPolicy<user> {
     private int numSensors;
     private String conditions;
     private Integer policyId;
-    private Timestamp inception_timestamp;
+    private long inceptionTimestamp;
 
     //SMART CONTRACT
     private String contractAddress;
@@ -36,15 +35,17 @@ public class SmartPolicy<user> {
     private String insuranceAddress;
     private String brokerAddress;
 
+    @Enumerated(EnumType.STRING)
+    private Constants.ContractState state;
 
-    private Timestamp activationTimestamp;
-    private Timestamp expiryTimestamp;
-    private Timestamp deactivationTimestamp;
+    private long activationTimestamp;
+    private long expiryTimestamp;
+    private long deactivationTimestamp;
 
     private Integer shipmentID;
     private Integer shipmentLiability;
-    private Integer sensorID;
-    private Integer sensorType;
+    private List<Integer> sensorID;
+    private List<Integer> sensorType;
     private Integer levelDepth;
     private Integer levelType;
     private Integer levelMinimumRange;
@@ -62,7 +63,6 @@ public class SmartPolicy<user> {
     @OneToMany(mappedBy = "smartPolicy")
     private List<Alert> alerts;
 
-
     public SmartPolicy(SmartPolicyDTO smartPolicyDTO, Policy policy, User user) {
         //policy parameters
 
@@ -73,13 +73,13 @@ public class SmartPolicy<user> {
         this.meansOfTransport = policy.getMeansOfTransport();
         this.numSensors = policy.getNumSensors();
         this.conditions = policy.getConditions();
-        this.inception_timestamp = policy.getInceptionTimestamp();
         this.product = policy.getProduct();
 
         //SmartPolicy Parameters
-        this.expiryTimestamp = null;
-        this.deactivationTimestamp = null;
-        this.activationTimestamp = null;
+        this.expiryTimestamp = policy.getExpiryTimestamp();
+        //this.deactivationTimestamp
+        //this.activationTimestamp
+        this.state = Constants.ContractState.NONE;
 
         this.shipmentID = smartPolicyDTO.getShipmentID();
         this.shipmentLiability = smartPolicyDTO.getShipmentLiability();
@@ -91,14 +91,12 @@ public class SmartPolicy<user> {
         this.levelMaximumRange = smartPolicyDTO.getLevelMaximumRange();
         this.percentualWeight = smartPolicyDTO.getPercentualWeight();
 
-
         this.contractPremium = smartPolicyDTO.getContractPremium(); //SC
         this.contractLiability = smartPolicyDTO.getContractLiability();
         this.insuranceAddress = smartPolicyDTO.getInsuranceAddress(); //SC
         this.clientAddress = smartPolicyDTO.getClientAddress(); //SC
         this.brokerAddress = smartPolicyDTO.getBrokerAddress();
         this.contractAddress = null;
-
 
         this.user = user;
 

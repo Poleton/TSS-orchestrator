@@ -240,3 +240,24 @@ _The internal logic._
 ### WEB3
 _For the communication with the blockchain._
 
+### SENSORS DATA
+
+The path to send the sensor's data is _/blockchain/api/sensors_ and 
+the format of the json is:
+
+    {
+        "userId": "{userId}",
+        "contractAddress": "{contractAddress}",
+        "sensorData": {
+            "{sensorId}": "{sensorValue}",
+            "{sensorId}": "{sensorValue}",
+            ...
+        },
+        "dataTimeStamp": "{dataTimeStamp}"
+    }
+
+>The *sensorId* should follow:  
+> - 1st Digit : Shipment ID, 2nd Digit : Sensor ID.  
+> 
+>The *dataTimeStamp* should be epoch format in seconds.
+

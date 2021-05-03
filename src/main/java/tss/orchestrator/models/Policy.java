@@ -7,8 +7,6 @@ import lombok.Setter;
 import tss.orchestrator.api.dto.PolicyDTO;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-
 
 @Entity
 @Getter @Setter @NoArgsConstructor
@@ -24,16 +22,12 @@ public class Policy{
     private String meansOfTransport;
     private int numSensors;
     private String conditions;
-    private Timestamp inceptionTimestamp;
-
-
-
+    private long inceptionTimestamp;
+    private long expiryTimestamp;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JsonIgnore
     private User user;
-
-
 
     public Policy (PolicyDTO policyDTO, User user){
         //super();
@@ -45,21 +39,6 @@ public class Policy{
         this.meansOfTransport = policyDTO.getMeansOfTransport();
         this.numSensors = policyDTO.getNumSensors();
         this.user = user;
-        this.inceptionTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
-    @Override
-    public String toString() {
-        return "Policy{" +
-                "id=" + id +
-                ", holderName='" + holderName + '\'' +
-                ", product='" + product + '\'' +
-                ", duration='" + duration + '\'' +
-                ", territorialScope='" + territorialScope + '\'' +
-                ", meansOfTransport='" + meansOfTransport + '\'' +
-                ", numSensors=" + numSensors +
-                ", conditions='" + conditions + '\'' +
-                ", user=" + user +
-                '}';
-    }
 }

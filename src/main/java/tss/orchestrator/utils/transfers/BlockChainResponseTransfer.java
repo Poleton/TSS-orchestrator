@@ -1,26 +1,14 @@
 package tss.orchestrator.utils.transfers;
 
-import java.time.Duration;
+import lombok.Getter;
+import lombok.Setter;
+import tss.orchestrator.utils.constants.Constants;
 
+@Getter @Setter
 public class BlockChainResponseTransfer {
     public BlockChainResponseTransfer() {}
 
-    private Duration performance;
-    private String message;
+    private String contractAddress;
+    private Constants.ContractState state;
 
-    public Duration getPerformance() {
-        return performance;
-    }
-
-    public void setPerformance(Duration performance) {
-        this.performance = performance;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }
