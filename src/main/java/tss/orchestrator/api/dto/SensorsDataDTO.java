@@ -2,7 +2,6 @@ package tss.orchestrator.api.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.HashMap;
 
 @Getter @Setter

@@ -8,7 +8,6 @@ import tss.orchestrator.api.dto.SmartPolicyDTO;
 import tss.orchestrator.utils.constants.Constants;
 
 import java.util.List;
-
 import javax.persistence.*;
 
 @Entity
@@ -61,6 +60,8 @@ public class SmartPolicy<user> {
     @JsonIgnore
     private User user;
 
+    @OneToMany(mappedBy = "smartPolicy")
+    private List<Alert> alerts;
 
     public SmartPolicy(SmartPolicyDTO smartPolicyDTO, Policy policy, User user) {
         //policy parameters
@@ -72,7 +73,6 @@ public class SmartPolicy<user> {
         this.meansOfTransport = policy.getMeansOfTransport();
         this.numSensors = policy.getNumSensors();
         this.conditions = policy.getConditions();
-        this.inceptionTimestamp = policy.getInceptionTimestamp();
         this.product = policy.getProduct();
 
         //SmartPolicy Parameters
@@ -91,14 +91,12 @@ public class SmartPolicy<user> {
         this.levelMaximumRange = smartPolicyDTO.getLevelMaximumRange();
         this.percentualWeight = smartPolicyDTO.getPercentualWeight();
 
-
         this.contractPremium = smartPolicyDTO.getContractPremium(); //SC
         this.contractLiability = smartPolicyDTO.getContractLiability();
         this.insuranceAddress = smartPolicyDTO.getInsuranceAddress(); //SC
         this.clientAddress = smartPolicyDTO.getClientAddress(); //SC
         this.brokerAddress = smartPolicyDTO.getBrokerAddress();
         this.contractAddress = null;
-
 
         this.user = user;
 
