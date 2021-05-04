@@ -2,6 +2,8 @@ package tss.orchestrator.service.impl;
 
 
 import org.springframework.stereotype.Component;
+import org.web3j.abi.EventValues;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 import tss.orchestrator.api.dto.SensorsDataDTO;
@@ -135,10 +137,12 @@ public class BlockChainServiceImpl implements BlockChainService {
             Iterator it = sensorsDataDTO.getSensorData().entrySet().iterator();
             while (it.hasNext()){
                 Map.Entry pair = (Map.Entry) it.next();
-                contract.updateSensor(BigInteger.valueOf((Integer) pair.getKey()),
+                TransactionReceipt transactionReceipt = contract.updateSensor(BigInteger.valueOf((Integer) pair.getKey()),
                         BigInteger.valueOf((Long) pair.getValue()),
                         BigInteger.valueOf(sensorsDataDTO.getDataTimeStamp()))
                         .send();
+
+                //EventValues eventValues = contract.processSomeEvent(transactionReceipt);
             }
 
             return responseTransfer;

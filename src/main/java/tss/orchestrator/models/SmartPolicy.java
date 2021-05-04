@@ -13,7 +13,7 @@ import javax.persistence.*;
 
 @Entity
 @Table
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter
 public class SmartPolicy<user> {
 
     @Id
@@ -31,6 +31,9 @@ public class SmartPolicy<user> {
     private long contractPremium; //Deploy
     private long contractLiability; //Deploy
     private long expiryTimestamp; //Deploy
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private User user;
 
     //From DTO
     private Integer policyId;
@@ -57,10 +60,6 @@ public class SmartPolicy<user> {
     private long activationTimestamp; //first sensor sending
     //  Deactivation
     private long deactivationTimestamp; //when client says
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    private User user;
 
     @OneToMany(mappedBy = "smartPolicy")
     private List<Alert> alerts;

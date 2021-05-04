@@ -76,8 +76,7 @@ public class UIRestController implements UIRestApi {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SmartPolicy smartPolicy = modelMapper.map(smartPolicyDTO, SmartPolicy.class);
-        modelMapper.map(policyOptional, smartPolicy);
-        smartPolicy.setUser(userOptional.get());
+        modelMapper.map(policyOptional.get(), smartPolicy);
 
         /*
         blockChainService.initialize(userOptional.get().getPrivateKey());
