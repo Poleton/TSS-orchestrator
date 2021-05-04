@@ -32,5 +32,9 @@ public interface UIRestApi {
     @GetMapping(Constants.API_SMART_POLICY_ALERT)
     ResponseEntity<List<Alert>> getAlerts(@PathVariable("userId") int userId, @PathVariable("smartId") int smartId) throws Exception;
 
+    @PostMapping(Constants.API_SMART_POLICY_DEACTIVATION)
+    ResponseEntity<Object> deactivateSmartPolicy(@PathVariable("userId") int userId,@PathVariable("smartId") int smartId);
+
+
 
 }
