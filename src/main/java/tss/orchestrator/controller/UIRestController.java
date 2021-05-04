@@ -18,6 +18,7 @@ import tss.orchestrator.service.PolicyRepository;
 import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
 import tss.orchestrator.service.impl.BlockChainServiceImpl;
+import tss.orchestrator.utils.constants.Constants;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.net.URI;
@@ -114,6 +115,21 @@ public class UIRestController implements UIRestApi {
         }
         else{
             throw new Exception("User or SmartPolicy not found");
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<Object> deactivateSmartPolicy(int userId, int smartId) {
+        Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartId);
+        Optional<User> user = userRepository.findById(userId);
+
+        if(user.isPresent() && smartPolicy.isPresent()){
+            smartPolicy.get().setState(Constants.ContractState.DEACTIVATED);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
