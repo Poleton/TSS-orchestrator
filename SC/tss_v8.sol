@@ -235,7 +235,7 @@ contract TSSDollarDEX {
     }
 }
 
-contract smartInsurancePolicy {
+contract SmartInsurancePolicy {
     
     event SensorUpdated(int256 levelID, int256 sensorType, int256 updatedData, int256 updatedDataExcess, uint256 levelExcessTime, uint256 contractReserve);
  
