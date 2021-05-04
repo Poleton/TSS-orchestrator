@@ -56,7 +56,6 @@ contract TSSDollar is IERC20 {
     using SafeMath for uint256;
 
     modifier onlyOwner {
-        
         require(tx.origin == contractOwner);
         _;
     }
@@ -167,6 +166,7 @@ contract TSSDollarDEX {
     }
     
     fallback() external payable {
+        
         buy();
     }
 
