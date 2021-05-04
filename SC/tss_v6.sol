@@ -227,7 +227,7 @@ contract smartInsurancePolicy {
     address public insurance;
     address public broker;
     
-    // Contract Monetary Parameters
+    // Contract Economic Parameters
     IERC20 contractCurrency;
 
     uint256 public contractPremium;
@@ -283,33 +283,28 @@ contract smartInsurancePolicy {
     //event Reserve(address indexed from, uint256 ID, uint256 reserve);
 
     modifier stateIsInitialized {
-
         require(contractState == State.Initialized);
         _;
     }
 
     modifier stateIsFunded {
-        
         require(contractState == State.Funded);
         _;
         contractState = State.Activated;
     }
 
     modifier stateIsActivated {
-        
         require(contractState == State.Activated);
         _;
     }
 
     modifier notExpired {
-        
         if(block.timestamp >= parameters.expiryTimestamp) {
             deactivateContract(parameters.expiryTimestamp);
         }
         _;
     }
 
-    // Constructor
     constructor(address _contractCurrency, address _client, address _insurance, address _broker, uint256 _premium, uint256 _liability, uint256 _inception, uint256 _expiry, string memory _scope) public {
     
         contractCurrency = IERC20(address(_contractCurrency));
@@ -327,7 +322,6 @@ contract smartInsurancePolicy {
         contractState = State.Initialized;
     }
 
-    // Contract Activation Function
     function activateContract(uint256 _activationTimestamp) public stateIsFunded notExpired returns (bool) {
         
         uint256 amount = 0;
@@ -344,7 +338,6 @@ contract smartInsurancePolicy {
         return true;
     }
 
-    // Contract Deactivation Function
     function deactivateContract(uint256 _deactivationTimestamp) public stateIsActivated returns (uint256) {
 
         parameters.deactivationTimestamp = _deactivationTimestamp;
@@ -359,7 +352,6 @@ contract smartInsurancePolicy {
         return contractReserve;
     }
 
-    // Contract Fund Function
     function fundContract(uint256 _amount) external stateIsInitialized notExpired {
         
         require((msg.sender == client && _amount == contractPremium) || (msg.sender == insurance && _amount == contractLiability), 'Invalid Transaction');
@@ -387,7 +379,6 @@ contract smartInsurancePolicy {
         }
     }
 
-    // Contract Initialization Functions
     function addShipment(uint256 _ID, uint256 _liability) external stateIsInitialized notExpired {
         
         shipments[shipmentCount] = Shipment(_ID, _liability, 0, 0);
@@ -420,7 +411,6 @@ contract smartInsurancePolicy {
         }
     }
 
-    // Data Update Functions
     function updateSensor(uint256 _ID, int256 _sensorData, uint256 _dataTimestamp) external stateIsActivated notExpired {
 
         for(uint256 i = 0; i < sensorCount; i++) {
@@ -445,7 +435,6 @@ contract smartInsurancePolicy {
         }
     }
 
-    // Reserve Update Function
     function updateReserve(uint256 _ID, uint256 _excessTime, uint256 _percentualWeight) internal {
 
         uint256 shipmentID = extractDigit(_ID, 2);
@@ -468,7 +457,6 @@ contract smartInsurancePolicy {
         }
     }
 
-    // ID Extraction Function
     function extractDigit(uint256 number, uint256 target) internal pure returns (uint256 extractedDigit) {
         
         for(uint8 i = 0; i < target; i++) {
