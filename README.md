@@ -247,7 +247,7 @@ the format of the json is:
 
     {
         "userId": "{userId}",
-        "contractAddress": "{contractAddress}",
+        "smartPolicyId": "{smartPolicyId}",
         "sensorData": {
             "{sensorId}": "{sensorValue}",
             "{sensorId}": "{sensorValue}",

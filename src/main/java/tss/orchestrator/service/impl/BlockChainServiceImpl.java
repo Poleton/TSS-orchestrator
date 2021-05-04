@@ -53,20 +53,55 @@ public class BlockChainServiceImpl implements BlockChainService {
             contract.addShipment(BigInteger.valueOf(smartPolicy.getId()),
                     BigInteger.valueOf(smartPolicy.getShipmentLiability()))
                     .send();
-
-            for(int i = 0; i < smartPolicy.getSensorID().size(); i++){
-                contract.addSensor(BigInteger.valueOf((Integer) smartPolicy.getSensorID().get(i)),
-                        BigInteger.valueOf((Integer) smartPolicy.getSensorType().get(i)))
+/*
+            if(smartPolicy.getTemperatureSensorID() != null){
+                contract.addSensor(BigInteger.valueOf(smartPolicy.getTemperatureSensorID()),
+                        BigInteger.valueOf(0))
+                        .send();
+                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
+                        BigInteger.valueOf(0),
+                        BigInteger.valueOf(smartPolicy.getTemperatureLevelMinimumRange()),
+                        BigInteger.valueOf(smartPolicy.getTemperatureLevelMaximumRange()),
+                        BigInteger.valueOf(smartPolicy.getTemperaturePercentualWeight()))
                         .send();
             }
 
-            contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getLevelDepth()),
-                    BigInteger.valueOf(smartPolicy.getLevelType()),
-                    BigInteger.valueOf(smartPolicy.getLevelMinimumRange()),
-                    BigInteger.valueOf(smartPolicy.getLevelMaximumRange()),
-                    BigInteger.valueOf(smartPolicy.getPercentualWeight()))
-                    .send();
+            if(smartPolicy.getPressureSensorID() != null){
+                contract.addSensor(BigInteger.valueOf(smartPolicy.getPressureSensorID()),
+                        BigInteger.valueOf(1))
+                        .send();
+                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
+                        BigInteger.valueOf(1),
+                        BigInteger.valueOf(smartPolicy.getPressureLevelMinimumRange()),
+                        BigInteger.valueOf(smartPolicy.getPressureLevelMaximumRange()),
+                        BigInteger.valueOf(smartPolicy.getPressurePercentualWeight()))
+                        .send();
+            }
 
+            if(smartPolicy.getAccelerationSensorID() != null){
+                contract.addSensor(BigInteger.valueOf(smartPolicy.getAccelerationSensorID()),
+                        BigInteger.valueOf(2))
+                        .send();
+                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
+                        BigInteger.valueOf(2),
+                        BigInteger.valueOf(smartPolicy.getAccelerationLevelMinimumRange()),
+                        BigInteger.valueOf(smartPolicy.getAccelerationLevelMaximumRange()),
+                        BigInteger.valueOf(smartPolicy.getAccelerationPercentualWeight()))
+                        .send();
+            }
+
+            if(smartPolicy.getHumiditySensorID() != null){
+                contract.addSensor(BigInteger.valueOf(smartPolicy.getHumiditySensorID()),
+                        BigInteger.valueOf(3))
+                        .send();
+                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
+                        BigInteger.valueOf(3),
+                        BigInteger.valueOf(smartPolicy.getHumidityLevelMinimumRange()),
+                        BigInteger.valueOf(smartPolicy.getHumidityLevelMaximumRange()),
+                        BigInteger.valueOf(smartPolicy.getHumidityPercentualWeight()))
+                        .send();
+            }
+*/
             //falta el funding
 
             BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();

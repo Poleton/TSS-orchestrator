@@ -1,6 +1,9 @@
 package tss.orchestrator.controller;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -51,15 +54,11 @@ public class UIRestController implements UIRestApi {
 
     @Override
     public ResponseEntity<Object> createPolicy(@PathVariable int userId, @RequestBody PolicyDTO policyDTO) {
-
         Optional<User> userOptional = userRepository.findById(userId);
 
-
-       /* if(!userOptional.isPresent()) {
-            throw new UserNotFoundException("userId-" + userId);
-        }*/
-
-        Policy policy = new Policy(policyDTO, userOptional.get());
+        ModelMapper modelMapper = new ModelMapper();
+        Policy policy = modelMapper.map(policyDTO, Policy.class);
+        policy.setUser(userOptional.get());
 
         policyRepository.save(policy);
 
@@ -71,19 +70,26 @@ public class UIRestController implements UIRestApi {
 
     @Override
     public ResponseEntity<Object> createSmartPolicy(int userId, SmartPolicyDTO smartPolicyDTO) {
-        Optional<User> user = userRepository.findById(userId);
-        Optional<Policy> policy = policyRepository.findById(smartPolicyDTO.getId());
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<Policy> policyOptional = policyRepository.findById(smartPolicyDTO.getPolicyId());
 
-        SmartPolicy smartPolicy = new SmartPolicy(smartPolicyDTO,policy.get(),user.get());
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        SmartPolicy smartPolicy = modelMapper.map(smartPolicyDTO, SmartPolicy.class);
+        modelMapper.map(policyOptional, smartPolicy);
+        smartPolicy.setUser(userOptional.get());
 
-        blockChainService.initialize(user.get().getPrivateKey());
+        /*
+        blockChainService.initialize(userOptional.get().getPrivateKey());
 
         BlockChainResponseTransfer responseTransfer = blockChainService.deployContract(smartPolicy);
 
         smartPolicy.setContractAddress(responseTransfer.getContractAddress());
         smartPolicy.setState(responseTransfer.getState());
+        */
 
         smartPolicyRepository.save(smartPolicy);
+        //System.out.println(smartPolicy.getSensors().toString());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(smartPolicy.getId()).toUri();
 
@@ -105,7 +111,7 @@ public class UIRestController implements UIRestApi {
         Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartId);
 
         if(user.isPresent() && smartPolicy.isPresent()){
-            return new ResponseEntity<>(smartPolicy.get().getAlerts(),HttpStatus.OK);
+            return new ResponseEntity<>(smartPolicy.get().getAlerts(), HttpStatus.OK);
         }
         else{
             throw new Exception("User or SmartPolicy not found");

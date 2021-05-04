@@ -32,18 +32,9 @@ public class BlockChainRestController implements BlockChainRestApi {
     public ResponseEntity<Object> sendSensorsData(@RequestBody SensorsDataDTO sensorsDataDTO){
 
         Optional<User> userOptional = userRepository.findById(sensorsDataDTO.getUserId());
-
-        List<SmartPolicy> smartPolicies = userOptional.get().getSmartPolicies();
-
-        SmartPolicy smartPolicy = null;
-        for(int i = 0; i < smartPolicies.size(); i++){
-            if(smartPolicies.get(i).getContractAddress() == sensorsDataDTO.getContractAddress()){
-                smartPolicy = smartPolicies.get(i);
-            }
-        }
-
         blockChainServiceImpl.initialize(userOptional.get().getPrivateKey());
 
+        SmartPolicy smartPolicy = smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get();
         BlockChainResponseTransfer responseTransfer = blockChainServiceImpl.sendSensorsData(smartPolicy, sensorsDataDTO);
 
         if (smartPolicy.getState() != responseTransfer.getState()){

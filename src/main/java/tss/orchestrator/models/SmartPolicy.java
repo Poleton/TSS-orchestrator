@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tss.orchestrator.api.dto.SmartPolicyDTO;
 import tss.orchestrator.utils.constants.Constants;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
 
 @Entity
@@ -19,42 +20,43 @@ public class SmartPolicy<user> {
     @GeneratedValue
     private Integer id;
 
-    //POLICY
-    private String holderName;
-    private String territorialScope;
-    private String meansOfTransport;
+    //From Policy
+    private long inceptionTimestamp; //Deploy
+    private boolean isSmart;
+    private String policyName;
+    private String policyHolderCIF;
+    private String policyHolderName;
     private String product;
-    private int numSensors;
-    private String conditions;
-    private Integer policyId;
-    private long inceptionTimestamp;
+    private String territorialScope; //Deploy
+    private long contractPremium; //Deploy
+    private long contractLiability; //Deploy
+    private long expiryTimestamp; //Deploy
 
-    //SMART CONTRACT
+    //From DTO
+    private Integer policyId;
+    //  Deploy
     private String contractAddress;
     private String clientAddress;
     private String insuranceAddress;
     private String brokerAddress;
-
-    @Enumerated(EnumType.STRING)
-    private Constants.ContractState state;
-
-    private long activationTimestamp;
-    private long expiryTimestamp;
-    private long deactivationTimestamp;
-
-    private Integer shipmentID;
+    //  Add shipment
+    private long shipmentID;
     private Integer shipmentLiability;
-    private List<Integer> sensorID;
-    private List<Integer> sensorType;
-    private Integer levelDepth;
-    private Integer levelType;
-    private Integer levelMinimumRange;
-    private Integer levelMaximumRange;
-    private Integer percentualWeight;
+    //  Add sensors & Condition
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "sensors_mapping",
+            joinColumns = {@JoinColumn(name = "smart_policy_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "sensor_id", referencedColumnName = "id")})
+    @MapKey(name = "id")
+    private Map<String, Sensor> sensors;
 
-
-    private Integer contractPremium;
-    private Integer contractLiability;
+    //Extra
+    @Enumerated(EnumType.STRING)
+    private Constants.ContractState state = Constants.ContractState.NONE;
+    //  Activation
+    private long activationTimestamp; //first sensor sending
+    //  Deactivation
+    private long deactivationTimestamp; //when client says
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
@@ -63,42 +65,4 @@ public class SmartPolicy<user> {
     @OneToMany(mappedBy = "smartPolicy")
     private List<Alert> alerts;
 
-    public SmartPolicy(SmartPolicyDTO smartPolicyDTO, Policy policy, User user) {
-        //policy parameters
-
-        this.policyId = policy.getId();
-
-        this.holderName = policy.getHolderName();
-        this.territorialScope = policy.getTerritorialScope();
-        this.meansOfTransport = policy.getMeansOfTransport();
-        this.numSensors = policy.getNumSensors();
-        this.conditions = policy.getConditions();
-        this.product = policy.getProduct();
-
-        //SmartPolicy Parameters
-        this.expiryTimestamp = policy.getExpiryTimestamp();
-        //this.deactivationTimestamp
-        //this.activationTimestamp
-        this.state = Constants.ContractState.NONE;
-
-        this.shipmentID = smartPolicyDTO.getShipmentID();
-        this.shipmentLiability = smartPolicyDTO.getShipmentLiability();
-        this.sensorID = smartPolicyDTO.getSensorID();
-        this.sensorType = smartPolicyDTO.getSensorType();
-        this.levelDepth = smartPolicyDTO.getLevelDepth();
-        this.levelType = smartPolicyDTO.getLevelType();
-        this.levelMinimumRange = smartPolicyDTO.getLevelMinimumRange();
-        this.levelMaximumRange = smartPolicyDTO.getLevelMaximumRange();
-        this.percentualWeight = smartPolicyDTO.getPercentualWeight();
-
-        this.contractPremium = smartPolicyDTO.getContractPremium(); //SC
-        this.contractLiability = smartPolicyDTO.getContractLiability();
-        this.insuranceAddress = smartPolicyDTO.getInsuranceAddress(); //SC
-        this.clientAddress = smartPolicyDTO.getClientAddress(); //SC
-        this.brokerAddress = smartPolicyDTO.getBrokerAddress();
-        this.contractAddress = null;
-
-        this.user = user;
-
-    }
 }

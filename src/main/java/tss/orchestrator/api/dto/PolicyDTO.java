@@ -6,12 +6,13 @@ import lombok.Setter;
 @Getter @Setter
 public class PolicyDTO {
 
-    private String holderName;
+    private String policyName;
+    private String policyHolderCIF;
+    private String policyHolderName;
     private String product;
-    private String duration;
     private String territorialScope;
-    private String meansOfTransport;
-    private int numSensors;
-    private String conditions;
+    private long contractPremium;
+    private long contractLiability;
+    private long expiryTimestamp;
 
 }
