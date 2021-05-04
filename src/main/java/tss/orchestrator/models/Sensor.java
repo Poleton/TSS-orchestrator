@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table
@@ -16,7 +13,16 @@ import javax.persistence.Table;
 public class Sensor {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(
+            name = "sensor_sequence",
+            sequenceName= "sensor_sequence",
+            allocationSize = 1
+
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "sensor_sequence"
+    )
     private Integer id;
 
     private String type;

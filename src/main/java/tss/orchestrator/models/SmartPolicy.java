@@ -17,7 +17,16 @@ import javax.persistence.*;
 public class SmartPolicy<user> {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(
+            name = "smartPolicy_sequence",
+            sequenceName= "smartPolicy_sequence",
+            allocationSize = 1
+
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "smartPolicy_sequence"
+    )
     private Integer id;
 
     //From Policy
