@@ -13,7 +13,16 @@ import javax.persistence.*;
 public class Alert {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(
+            name = "alert_sequence",
+            sequenceName= "alert_sequence",
+            allocationSize = 1
+
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "alert_sequence"
+    )
     Integer alertId;
 
     Integer conditionValue;
@@ -22,9 +31,4 @@ public class Alert {
     @ManyToOne(fetch = FetchType.LAZY)
     private SmartPolicy smartPolicy;
 
-    public Alert(AlertDTO alertDTO, SmartPolicy smartPolicy) {
-        this.conditionValue = alertDTO.getConditionValue();
-        this.conditionExceededValue = alertDTO.getConditionExceededValue();
-        this.smartPolicy = smartPolicy;
-    }
 }

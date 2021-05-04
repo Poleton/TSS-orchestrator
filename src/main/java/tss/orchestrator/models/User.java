@@ -14,7 +14,16 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(
+            name = "user_sequence",
+            sequenceName= "user_sequence",
+            allocationSize = 1
+
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "user_sequence"
+    )
     private Integer id;
 
     private String name;
@@ -29,18 +38,4 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<SmartPolicy> smartPolicies;
 
-    public User(UserDTO user) {
-        super();
-        this.name = user.getName();
-        this.password = user.getPassword();
-    }
-
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }
