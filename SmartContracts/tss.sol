@@ -183,7 +183,7 @@ contract TSSDollarDEX {
         emit Bought(amountTobuy);
     }
     
-    function buyAndApprove(address _delegate) public payable {
+    function buyAndApprove(address _delegate) external payable {
         
         buy();
         contractCurrency.approve(_delegate, msg.value * priceCurrency);
@@ -218,12 +218,18 @@ contract TSSDollarDEX {
         return contractCurrency.allowance(_owner, _delegate);
     }
     
-    function mint(address _account, uint256 _amount) external {
+    function mint(address _account, uint256 _amount) public {
         
         contractCurrency.mint(_account, _amount);
     }
     
-    function burn(address _account, uint256 _amount) external {
+    function mintAndApprove(address _account, uint256 _amount, address _delegate) external {
+        
+        mint(_account, _amount);
+        contractCurrency.approve(_delegate, _amount); 
+    }
+    
+    function burn(address _account, uint256 _amount) public {
         
         contractCurrency.burn(_account, _amount);
     }
