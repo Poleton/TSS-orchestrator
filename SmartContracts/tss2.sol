@@ -443,7 +443,7 @@ contract SmartInsurancePolicy {
                 conditionLevelCount += 1;
             }       
         }
-        emit ConditionLevelAdded(_ID, _dataRangeMin, _dataRangeMax, _percentualWeight, 0, _levelDepth);
+        emit ConditionLevelAdded(_ID, _dataRangeMin, _dataRangeMax, _percentualWeight, 0, conditionLevelCount);
     }
 
     function updateSensor(int256 _ID, int256 _sensorData, uint256 _dataTimestamp) external stateIsActivated notExpired {
