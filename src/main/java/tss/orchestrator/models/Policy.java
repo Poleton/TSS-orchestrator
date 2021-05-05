@@ -13,7 +13,16 @@ import javax.persistence.*;
 public class Policy{
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(
+            name = "policy_sequence",
+            sequenceName= "policy_sequence",
+            allocationSize = 1
+
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "policy_sequence"
+    )
     private Integer id;
     private long inceptionTimestamp;
     private boolean isSmart;

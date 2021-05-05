@@ -14,7 +14,16 @@ import javax.persistence.*;
 public class Sensor {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(
+            name = "sensor_sequence",
+            sequenceName= "sensor_sequence",
+            allocationSize = 1
+
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "sensor_sequence"
+    )
     private Integer id;
 
     private Integer type;
