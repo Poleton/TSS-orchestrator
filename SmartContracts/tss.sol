@@ -243,6 +243,9 @@ contract TSSDollarDEX {
 
 contract SmartInsurancePolicy {
     
+    //event SensorAdded(); // Hay que devolver todos los parametros del sensor añadido
+    //event ConditionLevelAdded(); // Hay que devolver todos los parametros del ultimo nivel añadido + el numero de niveles que hay en total
+    
     event SensorUpdated(int256 levelID, int256 sensorType, int256 updatedData, int256 updatedDataExcess, uint256 levelExcessTime, uint256 contractReserve);
  
     // Contract State
