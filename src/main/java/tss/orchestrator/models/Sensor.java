@@ -3,11 +3,9 @@ package tss.orchestrator.models;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tss.orchestrator.utils.constants.Constants;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table
@@ -19,11 +17,10 @@ public class Sensor {
     @GeneratedValue
     private Integer id;
 
-    private String type;
+    private Integer type;
     private Integer levelDepth;
     private Integer levelMinimumRange;
     private Integer levelMaximumRange;
     private Integer percentualWeight;
-
 
 }

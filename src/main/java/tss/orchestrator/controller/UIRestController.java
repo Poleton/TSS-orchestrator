@@ -78,17 +78,14 @@ public class UIRestController implements UIRestApi {
         SmartPolicy smartPolicy = modelMapper.map(smartPolicyDTO, SmartPolicy.class);
         modelMapper.map(policyOptional.get(), smartPolicy);
 
-        /*
         blockChainService.initialize(userOptional.get().getPrivateKey());
 
         BlockChainResponseTransfer responseTransfer = blockChainService.deployContract(smartPolicy);
 
         smartPolicy.setContractAddress(responseTransfer.getContractAddress());
         smartPolicy.setState(responseTransfer.getState());
-        */
 
         smartPolicyRepository.save(smartPolicy);
-        //System.out.println(smartPolicy.getSensors().toString());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(smartPolicy.getId()).toUri();
 

@@ -13,7 +13,6 @@ import tss.orchestrator.service.UserRepository;
 import tss.orchestrator.service.BlockChainService;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,6 +39,8 @@ public class BlockChainRestController implements BlockChainRestApi {
         if (smartPolicy.getState() != responseTransfer.getState()){
             smartPolicyRepository.setState(smartPolicy.getId(), responseTransfer.getState());
         }
+
+        System.out.println(responseTransfer.toString());
 
         return ResponseEntity.accepted().build();
     }

@@ -38,7 +38,6 @@ public class SmartPolicy<user> {
     //From DTO
     private Integer policyId;
     //  Deploy
-    private String contractAddress;
     private String clientAddress;
     private String insuranceAddress;
     private String brokerAddress;
@@ -54,6 +53,7 @@ public class SmartPolicy<user> {
     private Map<String, Sensor> sensors;
 
     //Extra
+    private String contractAddress;
     @Enumerated(EnumType.STRING)
     private Constants.ContractState state = Constants.ContractState.NONE;
     //  Activation

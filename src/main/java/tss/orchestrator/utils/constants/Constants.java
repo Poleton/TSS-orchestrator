@@ -20,8 +20,7 @@ public class  Constants {
     //Blockchain Constants
     public static final String HTTP_PROVIDER = "http://127.0.0.1:7545";
 
-    public static final String ADDRESS_ACCOUNT = "0x2444C17b21A36BFCCc666B3d0Bb5A66fD955ee3d";
-    public static final String PRIVATE_KEY = "7396c32490d627a95d33c17db86b4897fe6770026bbe2f10f3403a236302af22";
+    public static final String TOKEN_ADDRESS = "0x93055039d1D0868D55911AD2752A655c3d719aF2";
 
     public static final int GAS_PRICE = 200000000;
     public static final int GAS_LIMIT = 6721975;

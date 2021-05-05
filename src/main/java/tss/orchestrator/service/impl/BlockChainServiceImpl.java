@@ -7,8 +7,10 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 import tss.orchestrator.api.dto.SensorsDataDTO;
+import tss.orchestrator.models.Sensor;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.models.contracts.SmartInsurancePolicy;
+import tss.orchestrator.models.contracts.TSSDollar;
 import tss.orchestrator.service.BlockChainService;
 import tss.orchestrator.utils.constants.Constants;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,9 @@ import org.web3j.protocol.http.HttpService;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -37,11 +41,16 @@ public class BlockChainServiceImpl implements BlockChainService {
     }
 
     public BlockChainResponseTransfer deployContract (SmartPolicy smartPolicy){
+        BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();
 
         try {
+            //hacer primero el deploy del token y pillar su direccion
+            //luego hay que pasarsela como parametro en el deploy del contrato
+
             SmartInsurancePolicy contract = SmartInsurancePolicy.deploy(this.web3j,
                     credentials,
                     gasProvider,
+                    Constants.TOKEN_ADDRESS,
                     smartPolicy.getClientAddress(),
                     smartPolicy.getInsuranceAddress(),
                     smartPolicy.getBrokerAddress(),
@@ -52,69 +61,38 @@ public class BlockChainServiceImpl implements BlockChainService {
                     smartPolicy.getTerritorialScope())
                     .send();
 
+            responseTransfer.setContractAddress(contract.getContractAddress());
+
             contract.addShipment(BigInteger.valueOf(smartPolicy.getId()),
                     BigInteger.valueOf(smartPolicy.getShipmentLiability()))
                     .send();
-/*
-            if(smartPolicy.getTemperatureSensorID() != null){
-                contract.addSensor(BigInteger.valueOf(smartPolicy.getTemperatureSensorID()),
-                        BigInteger.valueOf(0))
+
+            Iterator it = smartPolicy.getSensors().entrySet().iterator();
+            while (it.hasNext()){
+                Map.Entry pair = (Map.Entry) it.next();
+                Sensor sensor = (Sensor) pair.getValue();
+
+                contract.addSensor(BigInteger.valueOf(sensor.getId()),
+                        BigInteger.valueOf(sensor.getType()))
                         .send();
-                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
-                        BigInteger.valueOf(0),
-                        BigInteger.valueOf(smartPolicy.getTemperatureLevelMinimumRange()),
-                        BigInteger.valueOf(smartPolicy.getTemperatureLevelMaximumRange()),
-                        BigInteger.valueOf(smartPolicy.getTemperaturePercentualWeight()))
+                contract.addConditionLevel(BigInteger.valueOf(sensor.getLevelDepth()),
+                        BigInteger.valueOf(sensor.getType()),
+                        BigInteger.valueOf(sensor.getLevelMinimumRange()),
+                        BigInteger.valueOf(sensor.getLevelMaximumRange()),
+                        BigInteger.valueOf(sensor.getPercentualWeight()))
                         .send();
             }
 
-            if(smartPolicy.getPressureSensorID() != null){
-                contract.addSensor(BigInteger.valueOf(smartPolicy.getPressureSensorID()),
-                        BigInteger.valueOf(1))
-                        .send();
-                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
-                        BigInteger.valueOf(1),
-                        BigInteger.valueOf(smartPolicy.getPressureLevelMinimumRange()),
-                        BigInteger.valueOf(smartPolicy.getPressureLevelMaximumRange()),
-                        BigInteger.valueOf(smartPolicy.getPressurePercentualWeight()))
-                        .send();
-            }
 
-            if(smartPolicy.getAccelerationSensorID() != null){
-                contract.addSensor(BigInteger.valueOf(smartPolicy.getAccelerationSensorID()),
-                        BigInteger.valueOf(2))
-                        .send();
-                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
-                        BigInteger.valueOf(2),
-                        BigInteger.valueOf(smartPolicy.getAccelerationLevelMinimumRange()),
-                        BigInteger.valueOf(smartPolicy.getAccelerationLevelMaximumRange()),
-                        BigInteger.valueOf(smartPolicy.getAccelerationPercentualWeight()))
-                        .send();
-            }
-
-            if(smartPolicy.getHumiditySensorID() != null){
-                contract.addSensor(BigInteger.valueOf(smartPolicy.getHumiditySensorID()),
-                        BigInteger.valueOf(3))
-                        .send();
-                contract.addConditionLevel(BigInteger.valueOf(smartPolicy.getTemperatureLevelDepth()),
-                        BigInteger.valueOf(3),
-                        BigInteger.valueOf(smartPolicy.getHumidityLevelMinimumRange()),
-                        BigInteger.valueOf(smartPolicy.getHumidityLevelMaximumRange()),
-                        BigInteger.valueOf(smartPolicy.getHumidityPercentualWeight()))
-                        .send();
-            }
-*/
             //falta el funding
 
-            BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();
-            responseTransfer.setState(Constants.ContractState.FUNDED);
-            responseTransfer.setContractAddress(contract.getContractAddress());
+            responseTransfer.setState(Constants.ContractState.ACTIVATED);
 
             return responseTransfer;
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new BlockChainResponseTransfer();
+            return responseTransfer;
         }
     }
 
@@ -142,10 +120,18 @@ public class BlockChainServiceImpl implements BlockChainService {
                         BigInteger.valueOf(sensorsDataDTO.getDataTimeStamp()))
                         .send();
 
-                //EventValues eventValues = contract.processSomeEvent(transactionReceipt);
-            }
+                List<SmartInsurancePolicy.SensorUpdatedEventResponse> updatedEvents = contract.getSensorUpdatedEvents(transactionReceipt);
 
+                responseTransfer.setLevelId(updatedEvents.get(0).levelID);
+                responseTransfer.setSensorType(updatedEvents.get(0).sensorType);
+                responseTransfer.setSensorData(updatedEvents.get(0).updatedData);
+                responseTransfer.setDataExcess(updatedEvents.get(0).updatedDataExcess);
+                responseTransfer.setLevelExcessTime(updatedEvents.get(0).levelExcessTime);
+                responseTransfer.setContractReserve(updatedEvents.get(0).contractReserve);
+                responseTransfer.setState(Constants.ContractState.values()[contract.contractState().send().intValue()]);
+            }
             return responseTransfer;
+
         } catch(Exception e){
             e.printStackTrace();
             return new BlockChainResponseTransfer();

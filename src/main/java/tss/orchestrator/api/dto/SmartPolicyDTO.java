@@ -11,7 +11,6 @@ public class SmartPolicyDTO {
 
     private Integer policyId;
     //  Deploy
-    private String contractAddress;
     private String clientAddress;
     private String insuranceAddress;
     private String brokerAddress;
