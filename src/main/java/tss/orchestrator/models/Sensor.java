@@ -32,4 +32,7 @@ public class Sensor {
     private Integer levelMaximumRange;
     private Integer percentualWeight;
 
+    //Extra
+    private Integer contractContextId;
+
 }

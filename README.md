@@ -35,9 +35,9 @@ To install MySQL follow [this](https://myaccount.google.com/u/0/lesssecureapps?p
 
 Using the _MySQL Command Line Client_ (once accessed with your root pass):
 
-    mysql> create database db_orchestrator; 
-    mysql> create user 'tss'@'%' identified by 'tss1234'; 
-    mysql> grant all on db_orchestrator.* to 'tss'@'%'; 
+    create database db_orchestrator; 
+    create user 'tss'@'%' identified by 'tss1234'; 
+    grant all on db_orchestrator.* to 'tss'@'%'; 
 
 1. Creates the new database called "db_orchestrator".
 2. Creates the user "tss" with "tss1234" as its password.
@@ -55,6 +55,11 @@ In the _src/main/resources/application.properties_ file:
     spring.jpa.hibernate.ddl-auto = update
     spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
 
+To recreate the database use:
+
+    drop database db_orchestrator;
+    create database db_orchestrator;
+    grant all on db_orchestrator.* to 'tss'@'%';
 
 ### Ethereum Blockchain Simulation
 
@@ -107,10 +112,11 @@ Otherwise, if you are willing to use a different smart contract:
 You will have to create by default the users, this is made automatically adding
 in the _src/main/resources/data.sql_:
 
-    insert into user values (1, 'user1', '1234', '{privateKey}');
+    insert into user values (1,'{accountAddress}', 'user1', '1234', '{privateKey}');
 
 >Put all necessary User values.  
->Change the _{privateKey}_ to your Ganache's first account private key.
+>Change the _{accountAddress}_ and _{privateKey}_ to your Ganache's
+> first account address and private key.
 
 Uncomment the last line in the _src/main/resources/application.properties_:
 

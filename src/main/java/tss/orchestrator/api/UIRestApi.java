@@ -3,7 +3,6 @@ package tss.orchestrator.api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tss.orchestrator.api.dto.PolicyDTO;
-import tss.orchestrator.api.dto.SmartContractDTO;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
 import tss.orchestrator.models.Alert;
 import tss.orchestrator.models.Policy;

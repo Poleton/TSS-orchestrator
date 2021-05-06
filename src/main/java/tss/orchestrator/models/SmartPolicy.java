@@ -31,7 +31,6 @@ public class SmartPolicy<user> {
 
     //From Policy
     private long inceptionTimestamp; //Deploy
-    private boolean isSmart;
     private String policyName;
     private String policyHolderCIF;
     private String policyHolderName;

@@ -38,9 +38,8 @@ public class BlockChainRestController implements BlockChainRestApi {
 
         if (smartPolicy.getState() != responseTransfer.getState()){
             smartPolicyRepository.setState(smartPolicy.getId(), responseTransfer.getState());
+            smartPolicyRepository.setActivationTimestamp(smartPolicy.getId(), sensorsDataDTO.getDataTimeStamp());
         }
-
-        System.out.println(responseTransfer.toString());
 
         return ResponseEntity.accepted().build();
     }

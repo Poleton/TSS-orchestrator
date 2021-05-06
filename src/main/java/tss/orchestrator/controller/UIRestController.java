@@ -10,10 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tss.orchestrator.api.UIRestApi;
 import tss.orchestrator.api.dto.PolicyDTO;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
-import tss.orchestrator.models.Alert;
-import tss.orchestrator.models.Policy;
-import tss.orchestrator.models.SmartPolicy;
-import tss.orchestrator.models.User;
+import tss.orchestrator.models.*;
 import tss.orchestrator.service.PolicyRepository;
 import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
@@ -22,8 +19,8 @@ import tss.orchestrator.utils.constants.Constants;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
 
 @RestController
 public class UIRestController implements UIRestApi {
@@ -60,6 +57,8 @@ public class UIRestController implements UIRestApi {
         ModelMapper modelMapper = new ModelMapper();
         Policy policy = modelMapper.map(policyDTO, Policy.class);
         policy.setUser(userOptional.get());
+        Instant instant = Instant.now();
+        policy.setInceptionTimestamp(instant.getEpochSecond());
 
         policyRepository.save(policy);
 
@@ -74,24 +73,31 @@ public class UIRestController implements UIRestApi {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Policy> policyOptional = policyRepository.findById(smartPolicyDTO.getPolicyId());
 
+        //Smart Policy build
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SmartPolicy smartPolicy = modelMapper.map(smartPolicyDTO, SmartPolicy.class);
         modelMapper.map(policyOptional.get(), smartPolicy);
+        smartPolicy.setBrokerAddress(userOptional.get().getBrokerAddress());
+        smartPolicy.setClientAddress(userOptional.get().getClientAddress());
+        smartPolicy.setInsuranceAddress(userOptional.get().getInsuranceAddress());
+        for (Map.Entry<String, Sensor> entry : ((HashMap<String, Sensor>) smartPolicy.getSensors()).entrySet()) {
+            entry.getValue().setContractContextId(Constants.SensorType.valueOf(entry.getKey().toUpperCase(Locale.ROOT)).ordinal());
+        }
 
+        //Blockchain interaction
         blockChainService.initialize(userOptional.get().getPrivateKey());
-
         BlockChainResponseTransfer responseTransfer = blockChainService.deployContract(smartPolicy);
 
+        //Set other parameters
+        policyRepository.setIsSmart(policyOptional.get().getId(), true);
         smartPolicy.setContractAddress(responseTransfer.getContractAddress());
         smartPolicy.setState(responseTransfer.getState());
-
         smartPolicyRepository.save(smartPolicy);
 
+        //Response
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(smartPolicy.getId()).toUri();
-
         return ResponseEntity.created(location).build();
-
 
     }
 

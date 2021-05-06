@@ -22,7 +22,7 @@ public class  Constants {
     //Blockchain Constants
     public static final String HTTP_PROVIDER = "http://127.0.0.1:7545";
 
-    public static final String TOKEN_ADDRESS = "0x93055039d1D0868D55911AD2752A655c3d719aF2";
+    public static final String TOKEN_ADDRESS = "0x8C9986f2dFf49DD0A0fa1AbB7f52fE20c7bA4F7E";
 
     public static final int GAS_PRICE = 200000000;
     public static final int GAS_LIMIT = 6721975;
@@ -33,5 +33,12 @@ public class  Constants {
         FUNDED,
         ACTIVATED,
         DEACTIVATED
+    }
+
+    public enum SensorType {
+        TEMPERATURE,
+        PRESSURE,
+        ACCELERATION,
+        HUMIDITY
     }
 }

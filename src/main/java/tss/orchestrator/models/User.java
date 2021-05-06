@@ -27,10 +27,12 @@ public class User {
     private Integer id;
 
     private String name;
-
     private String password;
 
+    private String clientAddress;
     private String privateKey;
+    private String insuranceAddress;
+    private String brokerAddress;
 
     @OneToMany(mappedBy = "user")
     private List<Policy> policies;
