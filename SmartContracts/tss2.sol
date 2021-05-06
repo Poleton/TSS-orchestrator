@@ -243,8 +243,8 @@ contract TSSDollarDEX {
 
 contract SmartInsurancePolicy {
     
-    //event SensorAdded(); // Hay que devolver todos los parametros del sensor añadido
-    //event ConditionLevelAdded(); // Hay que devolver todos los parametros del ultimo nivel añadido + el numero de niveles que hay en total
+    event SensorAdded(int256 ID, int256 sensorType, uint256 lastUpdate); // Hay que devolver todos los parametros del sensor añadido
+    event ConditionLevelAdded(int256 ID, int256 dataRangeMin, int256 dataRangeMax, uint256 percentualWeight, uint256 excessTime, int num_levels); // Hay que devolver todos los parametros del ultimo nivel añadido + el numero de niveles que hay en total
     
     event SensorUpdated(int256 levelID, int256 sensorType, int256 updatedData, int256 updatedDataExcess, uint256 levelExcessTime, uint256 contractReserve);
  
@@ -430,6 +430,7 @@ contract SmartInsurancePolicy {
                 shipments[i].numSensors += 1;
             }
         } 
+        emit SensorAdded(_ID, _sensorType, 0);
     }
 
     function addConditionLevel(int256 _levelDepth, int256 _sensorType, int256 _dataRangeMin, int256 _dataRangeMax, uint256 _percentualWeight) external stateIsInitialized validID(_levelDepth) notExpired {
@@ -442,6 +443,7 @@ contract SmartInsurancePolicy {
                 conditionLevelCount += 1;
             }       
         }
+        emit ConditionLevelAdded(_ID, _dataRangeMin, _dataRangeMax, _percentualWeight, 0, conditionLevelCount);
     }
 
     function updateSensor(int256 _ID, int256 _sensorData, uint256 _dataTimestamp) external stateIsActivated notExpired {
