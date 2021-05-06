@@ -12,7 +12,8 @@ This is a block from the TSS project which consists in:
     - Users
     - User Policies
     - User Smart Policies
-    - User Smart Policies Alerts
+    - User Smart Policy Alerts
+    - User Smart Policy Sensors
     
 
 ***
@@ -74,6 +75,15 @@ We are using this configuration:
     HOSTNAME: 127.0.0.1
     PORT NUMBER: 7545
 
+Once has Ganache started:
+
+1. Install truffle:
+
+        $ npm install truffle -g
+
+2. Deploy the token, go to _/TSS-orchestrator/truffle/_ directory and use:
+
+        $ truffle migrate
 
 #### Using your own Contracts
 
@@ -82,27 +92,23 @@ Otherwise, if you are willing to use a different smart contract:
 
 1. Install web3j CLI:
    
-        $ curl -L get.web3j.io | sh && source ~/.web3j/source.sh        
+        $ curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
-2. Install truffle:
-
-        $ npm install truffle -g
-
-3. Create a truffle project or use the already created in _/TSS-orchestrator/truffle/_.
+2. Create a truffle project or use the already created in _/TSS-orchestrator/truffle/_.
 
         $ truffle init 
 
-4. Put your _contract.sol_ in the _/TSS-orchestrator/truffle/contracts/_ and compile
+3. Put your _contract.sol_ in the _/TSS-orchestrator/truffle/contracts/_ and compile
    (you should be at the truffle project directory):
 
         $ truffle compile
 
-5. A _yourContract.json_ should have been generated in the
+4. A _yourContract.json_ should have been generated in the
    _/TSS-orchestrator/truffle/build/contracts/_, so now convert it into a Wrapper (.java)
    
         $ web3j generate truffle -t path/to/yourContract.json -o path/to/src/main/java/tss/orchestrator/models/contracts -p tss.orchestrator.models.contracts 
 
-6. Finally, modify the methods at the BlockChainServiceImpl class to use your contract.
+5. Finally, modify the methods at the BlockChainServiceImpl class to use your contract.
 
 
 ****
@@ -112,11 +118,18 @@ Otherwise, if you are willing to use a different smart contract:
 You will have to create by default the users, this is made automatically adding
 in the _src/main/resources/data.sql_:
 
-    insert into user values (1,'{accountAddress}', 'user1', '1234', '{privateKey}');
+    insert into user values (1,'{brokerAddress}','{clientAddress}','{insuranceAddress}', 'user1', '1234', '{privateKey}');
 
->Put all necessary User values.  
 >Change the _{accountAddress}_ and _{privateKey}_ to your Ganache's
-> first account address and private key.
+> first account address and private key.  
+> 
+>All the addresses are the same as _{accountAddress}_.
+
+Change the smart contract token address in the _src/main/java/tss/orchestrator/utils/constants/Constants.java_
+
+    public static final String TOKEN_ADDRESS = "{tokenAddress}";
+
+>You can get the address from the ganache's second block mined.
 
 Uncomment the last line in the _src/main/resources/application.properties_:
 
@@ -255,15 +268,14 @@ the format of the json is:
         "userId": "{userId}",
         "smartPolicyId": "{smartPolicyId}",
         "sensorData": {
-            "{sensorId}": "{sensorValue}",
-            "{sensorId}": "{sensorValue}",
+            "{sensorType}": "{sensorValue}",
+            "{sensorType}": "{sensorValue}",
             ...
         },
         "dataTimeStamp": "{dataTimeStamp}"
     }
 
->The *sensorId* should follow:  
-> - 1st Digit : Shipment ID, 2nd Digit : Sensor ID.  
+>The *sensorType* should be in string type (Ex. temperature).
 > 
 >The *dataTimeStamp* should be epoch format in seconds.
 
