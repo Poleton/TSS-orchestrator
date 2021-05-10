@@ -7,6 +7,7 @@ import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 import tss.orchestrator.api.dto.SensorsDataDTO;
 import tss.orchestrator.models.Sensor;
+import tss.orchestrator.models.SensorEvents;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.models.contracts.SmartInsurancePolicy;
 import tss.orchestrator.service.BlockChainService;
@@ -124,7 +125,6 @@ public class BlockChainServiceImpl implements BlockChainService {
             responseTransfer.setEvents(new HashMap<>());
             for (Map.Entry<String, Long> entry : sensorsDataDTO.getSensorData().entrySet()){
                 int id = Constants.SensorType.valueOf(entry.getKey().toUpperCase(Locale.ROOT)).ordinal();
-                System.out.println("id to update:" + id);
                 TransactionReceipt transactionReceipt = contract.updateSensor(BigInteger.valueOf(id),
                         BigInteger.valueOf(entry.getValue()).multiply(Constants.zeros),
                         BigInteger.valueOf(sensorsDataDTO.getDataTimeStamp()))
@@ -132,21 +132,14 @@ public class BlockChainServiceImpl implements BlockChainService {
 
                 List<SmartInsurancePolicy.SensorUpdatedEventResponse> updatedEvents = contract.getSensorUpdatedEvents(transactionReceipt);
 
-                System.out.println("levelID:" + updatedEvents.get(0).levelID);
-                System.out.println("updatedData:" + updatedEvents.get(0).updatedData);
-                System.out.println("updatedDataExcess:" + updatedEvents.get(0).updatedDataExcess);
-                System.out.println("levelExcessTime:" + updatedEvents.get(0).levelExcessTime);
-                System.out.println("contractReserve:" + updatedEvents.get(0).contractReserve);
-                System.out.println("sensorType:" + updatedEvents.get(0).sensorType.intValue());
-
                 if(updatedEvents.get(0).levelID.intValue() != -1){
-                    Map<String, BigInteger> map = new HashMap<>();
-                    map.put("levelID", updatedEvents.get(0).levelID);
-                    map.put("updatedData", updatedEvents.get(0).updatedData);
-                    map.put("updatedDataExcess", updatedEvents.get(0).updatedDataExcess);
-                    map.put("levelExcessTime", updatedEvents.get(0).levelExcessTime);
-                    map.put("contractReserve", updatedEvents.get(0).contractReserve);
-                    responseTransfer.getEvents().put(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()], map);
+                    SensorEvents sensorEvents = new SensorEvents();
+                    sensorEvents.setLevelID(updatedEvents.get(0).levelID);
+                    sensorEvents.setUpdatedData(updatedEvents.get(0).updatedData.divide(Constants.zeros));
+                    sensorEvents.setUpdatedDataExcess(updatedEvents.get(0).updatedDataExcess.divide(Constants.zeros));
+                    sensorEvents.setLevelExcessTime(updatedEvents.get(0).levelExcessTime);
+                    sensorEvents.setContractReserve(updatedEvents.get(0).contractReserve.divide(Constants.zeros));
+                    responseTransfer.getEvents().put(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()], sensorEvents);
                 }
             }
             return responseTransfer;
