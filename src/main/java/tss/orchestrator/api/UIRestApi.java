@@ -19,7 +19,7 @@ public interface UIRestApi {
     List<Policy> retrieveAllPolicies(@PathVariable int userId);
 
     @PostMapping(Constants.API_POLICIES)
-    ResponseEntity<Object> createPolicy(@PathVariable int userId, @RequestBody PolicyDTO policyDTO);
+    ResponseEntity<String> createPolicy(@PathVariable int userId, @RequestBody PolicyDTO policyDTO);
 
     //SMART POLICIES
     @PostMapping( Constants.API_SMART_POLICIES)

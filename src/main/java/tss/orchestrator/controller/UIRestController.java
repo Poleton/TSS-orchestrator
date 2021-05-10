@@ -17,6 +17,7 @@ import tss.orchestrator.service.UserRepository;
 import tss.orchestrator.service.impl.BlockChainServiceImpl;
 import tss.orchestrator.utils.constants.Constants;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
+import tss.orchestrator.utils.helpers.Validator;
 
 import java.net.URI;
 import java.time.Instant;
@@ -37,6 +38,8 @@ public class UIRestController implements UIRestApi {
     @Autowired
     private BlockChainServiceImpl blockChainService;
 
+    private Validator validate = new Validator();
+
 
     @Override
     public List<Policy> retrieveAllPolicies(@PathVariable int userId) {
@@ -51,27 +54,46 @@ public class UIRestController implements UIRestApi {
     }
 
     @Override
-    public ResponseEntity<Object> createPolicy(@PathVariable int userId, @RequestBody PolicyDTO policyDTO) {
+    public ResponseEntity<String> createPolicy(@PathVariable int userId, @RequestBody PolicyDTO policyDTO) {
         Optional<User> userOptional = userRepository.findById(userId);
 
-        ModelMapper modelMapper = new ModelMapper();
-        Policy policy = modelMapper.map(policyDTO, Policy.class);
-        policy.setUser(userOptional.get());
-        Instant instant = Instant.now();
-        policy.setInceptionTimestamp(instant.getEpochSecond());
+        if(userOptional.isPresent()) {
+            Instant instant = Instant.now();
+            if(policyDTO.getExpiryTimestamp()<= instant.getEpochSecond()){
+                return new ResponseEntity<>("Wrong expiry timestamp",HttpStatus.BAD_REQUEST);
+            }
+            else if(!validate.cifValidator(policyDTO.getPolicyHolderCIF())){
+                return new ResponseEntity<>("Incorrect format", HttpStatus.BAD_REQUEST);
+            }
+            ModelMapper modelMapper = new ModelMapper();
+            Policy policy = modelMapper.map(policyDTO, Policy.class);
+            policy.setUser(userOptional.get());
 
-        policyRepository.save(policy);
+            policy.setInceptionTimestamp(instant.getEpochSecond());
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(policy.getId())
-                .toUri();
+            policyRepository.save(policy);
 
-        return ResponseEntity.created(location).build();
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}").buildAndExpand(policy.getId())
+                    .toUri();
+
+            return ResponseEntity.created(location).build();
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
     public ResponseEntity<Object> createSmartPolicy(int userId, SmartPolicyDTO smartPolicyDTO) {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Policy> policyOptional = policyRepository.findById(smartPolicyDTO.getPolicyId());
+        /*
+        if(!validate.smartContractAddressValidator(userOptional.get().)){
+            return new ResponseEntity<>("Wrong address format", HttpStatus.BAD_REQUEST);
+        }
+
+
+         */
 
         //Smart Policy build
         ModelMapper modelMapper = new ModelMapper();
@@ -84,6 +106,7 @@ public class UIRestController implements UIRestApi {
         for (Map.Entry<String, Sensor> entry : ((HashMap<String, Sensor>) smartPolicy.getSensors()).entrySet()) {
             entry.getValue().setContractContextId(Constants.SensorType.valueOf(entry.getKey().toUpperCase(Locale.ROOT)).ordinal());
         }
+        smartPolicy.setId(null);
 
         //Blockchain interaction
         blockChainService.initialize(userOptional.get().getPrivateKey());
