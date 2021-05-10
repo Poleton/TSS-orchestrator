@@ -15,4 +15,5 @@ public class PolicyDTO {
     private long contractLiability;
     private long expiryTimestamp;
 
+
 }

@@ -37,6 +37,7 @@ public class Policy{
     private long contractLiability;
     private long expiryTimestamp;
 
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JsonIgnore
     private User user;
