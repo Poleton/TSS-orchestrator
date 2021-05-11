@@ -183,7 +183,7 @@ contract TSSDollarDEX {
         emit Bought(amountTobuy);
     }
     
-    function buyAndApprove(address _delegate) public payable {
+    function buyAndApprove(address _delegate) external payable {
         
         buy();
         contractCurrency.approve(_delegate, msg.value * priceCurrency);
@@ -218,12 +218,18 @@ contract TSSDollarDEX {
         return contractCurrency.allowance(_owner, _delegate);
     }
     
-    function mint(address _account, uint256 _amount) external {
+    function mint(address _account, uint256 _amount) public {
         
         contractCurrency.mint(_account, _amount);
     }
     
-    function burn(address _account, uint256 _amount) external {
+    function mintAndApprove(address _account, uint256 _amount, address _delegate) external {
+        
+        mint(_account, _amount);
+        contractCurrency.approve(_delegate, _amount); 
+    }
+    
+    function burn(address _account, uint256 _amount) public {
         
         contractCurrency.burn(_account, _amount);
     }
@@ -235,7 +241,10 @@ contract TSSDollarDEX {
     }
 }
 
-contract smartInsurancePolicy {
+contract SmartInsurancePolicy {
+    
+    event SensorAdded(int256 ID, int256 sensorType);
+    event ConditionLevelAdded(int256 ID, int256 dataRangeMin, int256 dataRangeMax, uint256 percentualWeight, uint256 conditionLevelCount);
     
     event SensorUpdated(int256 levelID, int256 sensorType, int256 updatedData, int256 updatedDataExcess, uint256 levelExcessTime, uint256 contractReserve);
  
@@ -377,9 +386,35 @@ contract smartInsurancePolicy {
     }
 
     function fundContract(uint256 _amount) external stateIsInitialized notExpired {
-        
         contractState = State.Funded;
     }
+
+    // function fundContract(uint256 _amount) external stateIsInitialized notExpired {
+        
+    //     require((msg.sender == client && _amount == contractPremium) || (msg.sender == insurance && _amount == contractLiability), 'Invalid Transaction');
+        
+    //     uint256 allowance = contractCurrency.allowance(msg.sender, address(this));
+    //     require(allowance >= _amount, 'Insuficient Account Allowance');
+        
+    //     if(msg.sender == client) {
+            
+    //         require(!premiumFunded, 'Premium Already Funded');
+
+    //         contractCurrency.transferFrom(msg.sender, address(this), _amount);
+    //         premiumFunded = true;
+        
+    //     } else {
+            
+    //         require(!liabilityFunded, 'Insurance Already Funded');
+
+    //         contractCurrency.transferFrom(msg.sender, address(this), _amount);
+    //         liabilityFunded = true;
+    //     }
+
+    //     if(premiumFunded && liabilityFunded) {
+    //         contractState = State.Funded;
+    //     }
+    // }
 
     function addShipment(int256 _ID, uint256 _liability) external stateIsInitialized validID(_ID) notExpired {
         
@@ -399,6 +434,7 @@ contract smartInsurancePolicy {
                 shipments[i].numSensors += 1;
             }
         } 
+        emit SensorAdded(_ID, _sensorType);
     }
 
     function addConditionLevel(int256 _levelDepth, int256 _sensorType, int256 _dataRangeMin, int256 _dataRangeMax, uint256 _percentualWeight) external stateIsInitialized validID(_levelDepth) notExpired {
@@ -409,6 +445,7 @@ contract smartInsurancePolicy {
                 int256 _ID = (sensors[i].ID * 10) + _levelDepth;
                 conditionLevels[conditionLevelCount] = ConditionLevel(_ID, _dataRangeMin, _dataRangeMax, _percentualWeight, 0);
                 conditionLevelCount += 1;
+                emit ConditionLevelAdded(_ID, _dataRangeMin, _dataRangeMax, _percentualWeight, conditionLevelCount);
             }       
         }
     }
@@ -428,19 +465,22 @@ contract smartInsurancePolicy {
                        
                 for(uint256 k = 0; k < conditionLevelCount; k++) {
                     
-                    if( (conditionLevels[k].dataRangeMin <= _sensorData) && (_sensorData < conditionLevels[k].dataRangeMax) ) {
-
-                        if(sensors[i].lastUpdate != 0) {
-                            uint256 auxTime = conditionLevels[k].excessTime;
-                            conditionLevels[k].excessTime += (_dataTimestamp - sensors[i].lastUpdate);
-                            updateReserve(conditionLevels[k].ID, (conditionLevels[k].excessTime - auxTime), conditionLevels[k].percentualWeight);
-                        } else {
-                            sensors[i].lastUpdate = _dataTimestamp;
+                    if(sensors[i].ID == (conditionLevels[k].ID/10)) {
+                    
+                        if( (conditionLevels[k].dataRangeMin <= _sensorData) && (_sensorData < conditionLevels[k].dataRangeMax) ) {
+    
+                            if(sensors[i].lastUpdate != 0) {
+                                uint256 auxTime = conditionLevels[k].excessTime;
+                                conditionLevels[k].excessTime += (_dataTimestamp - sensors[i].lastUpdate);
+                                updateReserve(conditionLevels[k].ID, (conditionLevels[k].excessTime - auxTime), conditionLevels[k].percentualWeight);
+                            } else {
+                                sensors[i].lastUpdate = _dataTimestamp;
+                            }
+                            updatedLevelID = conditionLevels[k].ID;
+                            updatedDataExcess = (_sensorData - conditionLevels[k].dataRangeMin);
+                            levelExcessTime = conditionLevels[k].excessTime;
                         }
-                        updatedLevelID = conditionLevels[k].ID;
-                        updatedDataExcess = (_sensorData - conditionLevels[k].dataRangeMin);
-                        levelExcessTime = conditionLevels[k].excessTime;
-                    }   
+                    }
                 }
                 sensors[i].lastUpdate = _dataTimestamp;
             }       

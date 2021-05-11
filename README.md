@@ -22,7 +22,7 @@ This is a block from the TSS project which consists in:
 
 ### MySQL environment
 
-To install MySQL follow [this](https://myaccount.google.com/u/0/lesssecureapps?pli=1).  
+To install MySQL follow [this](https://www.mysqltutorial.org/getting-started-with-mysql/).  
 
 > **Additional info for installation:**   
 > - It is not necessary to get everything, there may be some features that could not be 

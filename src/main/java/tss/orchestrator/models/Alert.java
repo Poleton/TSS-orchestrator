@@ -3,9 +3,13 @@ package tss.orchestrator.models;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import tss.orchestrator.api.dto.AlertDTO;
+import tss.orchestrator.utils.constants.Constants;
 
 import javax.persistence.*;
+import java.math.BigInteger;
+import java.util.Map;
 
 @Entity
 @Table(name="Alert")
@@ -23,10 +27,17 @@ public class Alert {
             strategy = GenerationType.SEQUENCE,
             generator = "alert_sequence"
     )
-    Integer alertId;
+    private Integer id;
 
-    Integer conditionValue;
-    Integer conditionExceededValue;
+    @Enumerated(EnumType.STRING)
+    private Constants.ContractState state;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "sensor_events_mapping",
+            joinColumns = {@JoinColumn(name = "alert_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "sensor_events_id", referencedColumnName = "id")})
+    @MapKey(name = "id")
+    private Map<Constants.SensorType, SensorEvents> events;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private SmartPolicy smartPolicy;

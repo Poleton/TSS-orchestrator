@@ -7,6 +7,7 @@ import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 import tss.orchestrator.api.dto.SensorsDataDTO;
 import tss.orchestrator.models.Sensor;
+import tss.orchestrator.models.SensorEvents;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.models.contracts.SmartInsurancePolicy;
 import tss.orchestrator.service.BlockChainService;
@@ -52,8 +53,8 @@ public class BlockChainServiceImpl implements BlockChainService {
                     smartPolicy.getClientAddress(),
                     smartPolicy.getInsuranceAddress(),
                     smartPolicy.getBrokerAddress(),
-                    BigInteger.valueOf(smartPolicy.getContractPremium()), //200
-                    BigInteger.valueOf(smartPolicy.getContractLiability()),  //1000
+                    BigInteger.valueOf(smartPolicy.getContractPremium()).multiply(Constants.zeros), //200
+                    BigInteger.valueOf(smartPolicy.getContractLiability()).multiply(Constants.zeros),  //1000
                     BigInteger.valueOf(smartPolicy.getInceptionTimestamp()), //1619647900
                     BigInteger.valueOf(smartPolicy.getExpiryTimestamp()), //1619747900
                     smartPolicy.getTerritorialScope())
@@ -63,21 +64,35 @@ public class BlockChainServiceImpl implements BlockChainService {
             responseTransfer.setState(Constants.ContractState.INITIALIZED);
 
             contract.addShipment(BigInteger.valueOf(smartPolicy.getShipmentID()),
-                    BigInteger.valueOf(smartPolicy.getShipmentLiability()))
+                    BigInteger.valueOf(smartPolicy.getShipmentLiability()).multiply(Constants.zeros))
                     .send();
 
             for (Map.Entry<String,Sensor> entry : ((HashMap<String, Sensor>) smartPolicy.getSensors()).entrySet()){
                 Sensor sensor = entry.getValue();
                 System.out.println(sensor.getContractContextId());
-                contract.addSensor(BigInteger.valueOf(sensor.getContractContextId()),
+                TransactionReceipt transactionReceipt = contract.addSensor(BigInteger.valueOf(sensor.getContractContextId()),
                         BigInteger.valueOf(sensor.getContractContextId()))
                         .send();
-                contract.addConditionLevel(BigInteger.valueOf(sensor.getLevelDepth()),
+
+                List<SmartInsurancePolicy.SensorAddedEventResponse> updatedEvents = contract.getSensorAddedEvents(transactionReceipt);
+
+                System.out.println("ID:" + updatedEvents.get(0).ID);
+                System.out.println("sensorType:" + updatedEvents.get(0).sensorType);
+
+                transactionReceipt = contract.addConditionLevel(BigInteger.valueOf(sensor.getLevelDepth()),
                         BigInteger.valueOf(sensor.getContractContextId()),
-                        BigInteger.valueOf(sensor.getLevelMinimumRange()),
-                        BigInteger.valueOf(sensor.getLevelMaximumRange()),
+                        BigInteger.valueOf(sensor.getLevelMinimumRange()).multiply(Constants.zeros),
+                        BigInteger.valueOf(sensor.getLevelMaximumRange()).multiply(Constants.zeros),
                         BigInteger.valueOf(sensor.getPercentualWeight()))
                         .send();
+
+                List<SmartInsurancePolicy.ConditionLevelAddedEventResponse> updatedEvents2 = contract.getConditionLevelAddedEvents(transactionReceipt);
+
+                System.out.println("ID:" + updatedEvents2.get(0).ID);
+                System.out.println("conditionLevelCount:" + updatedEvents2.get(0).conditionLevelCount);
+                System.out.println("dataRangeMax:" + updatedEvents2.get(0).dataRangeMax);
+                System.out.println("dataRangeMin:" + updatedEvents2.get(0).dataRangeMin);
+                System.out.println("percentualWeight:" + updatedEvents2.get(0).percentualWeight);
             }
 
             contract.fundContract(BigInteger.valueOf(100)).send();
@@ -111,27 +126,20 @@ public class BlockChainServiceImpl implements BlockChainService {
             for (Map.Entry<String, Long> entry : sensorsDataDTO.getSensorData().entrySet()){
                 int id = Constants.SensorType.valueOf(entry.getKey().toUpperCase(Locale.ROOT)).ordinal();
                 TransactionReceipt transactionReceipt = contract.updateSensor(BigInteger.valueOf(id),
-                        BigInteger.valueOf(entry.getValue()),
+                        BigInteger.valueOf(entry.getValue()).multiply(Constants.zeros),
                         BigInteger.valueOf(sensorsDataDTO.getDataTimeStamp()))
                         .send();
 
                 List<SmartInsurancePolicy.SensorUpdatedEventResponse> updatedEvents = contract.getSensorUpdatedEvents(transactionReceipt);
 
-                System.out.println(updatedEvents.get(0).levelID);
-                System.out.println(updatedEvents.get(0).updatedData);
-                System.out.println(updatedEvents.get(0).updatedDataExcess);
-                System.out.println(updatedEvents.get(0).levelExcessTime);
-                System.out.println(updatedEvents.get(0).contractReserve);
-                System.out.println(updatedEvents.get(0).sensorType.intValue());
-
                 if(updatedEvents.get(0).levelID.intValue() != -1){
-                    Map<String, BigInteger> map = new HashMap<>();
-                    map.put("levelID", updatedEvents.get(0).levelID);
-                    map.put("updatedData", updatedEvents.get(0).updatedData);
-                    map.put("updatedDataExcess", updatedEvents.get(0).updatedDataExcess);
-                    map.put("levelExcessTime", updatedEvents.get(0).levelExcessTime);
-                    map.put("contractReserve", updatedEvents.get(0).contractReserve);
-                    responseTransfer.getEvents().put(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()], map);
+                    SensorEvents sensorEvents = new SensorEvents();
+                    sensorEvents.setLevelID(updatedEvents.get(0).levelID);
+                    sensorEvents.setUpdatedData(updatedEvents.get(0).updatedData.divide(Constants.zeros));
+                    sensorEvents.setUpdatedDataExcess(updatedEvents.get(0).updatedDataExcess.divide(Constants.zeros));
+                    sensorEvents.setLevelExcessTime(updatedEvents.get(0).levelExcessTime);
+                    sensorEvents.setContractReserve(updatedEvents.get(0).contractReserve.divide(Constants.zeros));
+                    responseTransfer.getEvents().put(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()], sensorEvents);
                 }
             }
             return responseTransfer;
