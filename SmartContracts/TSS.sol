@@ -28,6 +28,8 @@ interface IERC20 {
     
     function mint(address account, uint256 amount) external;
     function burn(address account, uint256 amount) external;
+    
+    function getOwner() external view returns (address);
 }
 
 contract TSSDollar is IERC20 {
@@ -132,6 +134,11 @@ contract TSSDollar is IERC20 {
         balances[account] = balances[account].sub(amount);
         emit Transfer(account, address(0), amount);
     }
+    
+    function getOwner() external override view returns (address) {
+        
+        return contractOwner;
+    }
 }
 
 contract TSSDollarDEX {
@@ -220,7 +227,7 @@ contract TSSDollarDEX {
     
     function setCurrencyPrice(uint256 _price) external {
         
-        require(msg.sender == contractCurrency.contractOwner);
+        require(msg.sender == contractCurrency.getOwner());
         
         priceCurrency = _price;
     }
