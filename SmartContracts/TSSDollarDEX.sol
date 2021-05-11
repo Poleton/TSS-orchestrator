@@ -89,7 +89,7 @@ contract TSSDollarDEX {
     
     function setCurrencyPrice(uint256 _price) external {
         
-        require(msg.sender == contractCurrency.contractOwner);
+        require(msg.sender == contractCurrency.getOwner());
         
         priceCurrency = _price;
     }
