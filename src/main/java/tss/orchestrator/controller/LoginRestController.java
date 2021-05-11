@@ -24,14 +24,13 @@ public class LoginRestController implements LoginRestApi {
     public ResponseEntity<Integer> login(UserDTO user) {
 
         User username = userRepository.findByNameAndPassword(user.getName(), user.getPassword());
-       // if(username == null) throw new UsernameNotFoundException(username);
+
         if(username != null) {
             //return ResponseEntity.ok().build();
             return new ResponseEntity<Integer>(username.getId(), HttpStatus.OK);
         }
         else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        //else return ResponseEntity.notFound().build();
-                // cuando devuelva usuario correcto, devolver tambien el id del user para que puedean gestionar la url
+
 
 
     }

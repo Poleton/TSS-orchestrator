@@ -10,10 +10,7 @@ import java.util.Map;
 public class SmartPolicyDTO {
 
     private Integer policyId;
-    //  Deploy
-    private String clientAddress;
-    private String insuranceAddress;
-    private String brokerAddress;
+
     //  Add shipment
     private long shipmentID;
     private Integer shipmentLiability;
