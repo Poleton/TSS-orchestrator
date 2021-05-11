@@ -104,4 +104,9 @@ contract TSSDollar is IERC20 {
         balances[account] = balances[account].sub(amount);
         emit Transfer(account, address(0), amount);
     }
+    
+    function getOwner() external override view returns (address) {
+        
+        return contractOwner;
+    }
 }
