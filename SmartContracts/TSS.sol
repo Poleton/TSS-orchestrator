@@ -148,12 +148,12 @@ contract TSSDollarDEX {
 
     IERC20 public contractCurrency;
 
-    uint256 public priceCurrency;
+    uint256 public currencyPrice;
 
     constructor() public {
         
         contractCurrency = new TSSDollar();
-        priceCurrency = 1000;
+        currencyPrice = 1000;
     }
     
     fallback() external payable {
@@ -163,7 +163,7 @@ contract TSSDollarDEX {
 
     function buy() public payable {
         
-        uint256 amountTobuy = msg.value * priceCurrency;
+        uint256 amountTobuy = msg.value * currencyPrice;
         uint256 dexBalance = contractCurrency.balanceOf(address(this));
         
         require(amountTobuy > 0, 'Insuficient ETH Sent Quantity');
@@ -177,7 +177,7 @@ contract TSSDollarDEX {
     function buyAndApprove(address _delegate) external payable {
         
         buy();
-        contractCurrency.approve(_delegate, msg.value * priceCurrency);
+        contractCurrency.approve(_delegate, msg.value * currencyPrice);
     }
 
     function sell(uint256 _amount) public {
@@ -189,7 +189,7 @@ contract TSSDollarDEX {
         require(_allowance >= _amount, 'Insuficient Account Allowance');
         
         contractCurrency.transferFrom(msg.sender, address(this), _amount);
-        payable(msg.sender).transfer(_amount/priceCurrency);
+        payable(msg.sender).transfer(_amount/currencyPrice);
         
         emit Sold(_amount);
     }
@@ -229,7 +229,7 @@ contract TSSDollarDEX {
         
         require(msg.sender == contractCurrency.getOwner());
         
-        priceCurrency = _price;
+        currencyPrice = _price;
     }
 }
 
