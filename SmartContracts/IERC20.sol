@@ -28,4 +28,6 @@ interface IERC20 {
     
     function mint(address account, uint256 amount) external;
     function burn(address account, uint256 amount) external;
+    
+    function getOwner() external view returns (address);
 }
