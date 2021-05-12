@@ -109,13 +109,15 @@ public class UIRestController implements UIRestApi {
         smartPolicy.setId(null);
 
         //Blockchain interaction
-        blockChainService.initialize(userOptional.get().getPrivateKey());
-        BlockChainResponseTransfer responseTransfer = blockChainService.deployContract(smartPolicy);
+        //blockChainService.initialize(userOptional.get().getPrivateKey());
+        //BlockChainResponseTransfer responseTransfer = blockChainService.deployContract(smartPolicy);
 
         //Set other parameters
         policyRepository.setIsSmart(policyOptional.get().getId(), true);
-        smartPolicy.setContractAddress(responseTransfer.getContractAddress());
-        smartPolicy.setState(responseTransfer.getState());
+        //smartPolicy.setContractAddress(responseTransfer.getContractAddress());
+        //smartPolicy.setState(responseTransfer.getState());
+        smartPolicy.setContractAddress("dsa6d1sa56d1sad684asd41as");
+        smartPolicy.setState(Constants.ContractState.FUNDED);
         smartPolicyRepository.save(smartPolicy);
 
         //Response
