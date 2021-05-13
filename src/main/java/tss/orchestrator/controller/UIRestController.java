@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
 public class UIRestController implements UIRestApi {
 
     @Autowired
