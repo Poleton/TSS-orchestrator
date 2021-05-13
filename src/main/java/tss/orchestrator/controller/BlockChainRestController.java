@@ -84,7 +84,7 @@ public class BlockChainRestController implements BlockChainRestApi {
         acc.setLevelExcessTime(BigInteger.valueOf(100));
         acc.setUpdatedDataExcess(BigInteger.valueOf(100));
         acc.setLevelID(BigInteger.valueOf(20));
-        events.put(Constants.SensorType.TEMPERATURE, acc);
+        events.put(Constants.SensorType.ACCELERATION, acc);
         alert.setEvents(events);
         alert.setSmartPolicy(smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get());
         alertRepository.save(alert);

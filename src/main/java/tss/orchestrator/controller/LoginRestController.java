@@ -29,7 +29,7 @@ public class LoginRestController implements LoginRestApi {
             //return ResponseEntity.ok().build();
             return new ResponseEntity<Integer>(username.getId(), HttpStatus.OK);
         }
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
 
 

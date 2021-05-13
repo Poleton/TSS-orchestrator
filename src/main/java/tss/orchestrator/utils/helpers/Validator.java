@@ -35,6 +35,7 @@ public class Validator {
     /*/^(0x)?[0-9a-f]{40}$/
 
      */
+    /*
     public Boolean smartContractAddressValidator(SmartPolicyDTO smartPolicyDTO){
         Pattern pattern = Pattern.compile("^0x[a-fA-F0-9]{40}$");
         Matcher matcher_broker = pattern.matcher(smartPolicyDTO.getBrokerAddress());
@@ -45,4 +46,6 @@ public class Validator {
         return (matcher_broker.find() && matcher_client.find() && matcher_insurance.find());
 
     }
+
+     */
 }

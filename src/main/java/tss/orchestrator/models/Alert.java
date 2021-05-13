@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import tss.orchestrator.api.dto.AlertDTO;
 import tss.orchestrator.utils.constants.Constants;
 
@@ -40,6 +41,7 @@ public class Alert {
     private Map<Constants.SensorType, SensorEvents> events;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private SmartPolicy smartPolicy;
 
 }
