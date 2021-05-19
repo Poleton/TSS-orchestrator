@@ -1,5 +1,9 @@
 package tss.orchestrator.controller;
 
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import tss.orchestrator.utils.constants.Constants;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 import tss.orchestrator.utils.helpers.Validator;
 
+import javax.swing.text.html.HTML;
 import java.net.URI;
 import java.time.Instant;
 import java.util.*;
@@ -162,4 +167,53 @@ public class UIRestController implements UIRestApi {
         }
 
     }
+/*
+    @Override
+    public ResponseEntity<org.json.JSONObject> refreshAlerts(int userId, int smartId, String data) throws JSONException {
+        Optional<User> user = userRepository.findById(userId);
+
+        JSONObject json = new JSONObject(data);
+        System.out.println(json);
+        return new ResponseEntity<>(json,HttpStatus.OK);
+    }
+
+ */
+
+    @Override
+    public ResponseEntity<HashMap<String,Boolean>> refreshAlerts(int userId, int smartId, String data) throws JSONException {
+        Optional<User> user = userRepository.findById(userId);
+        JSONObject json = new JSONObject(data);
+
+        HashMap<String,Boolean> map = new HashMap<>();
+
+        //FALTA FER CONTROL DE ERRORS!!!!!!!!!
+
+        if(user.isPresent()){
+            JSONArray keys = json.names();
+            for(int i=0;i<keys.length();i++){
+                int smartPolicyId = keys.getInt(i);
+                int alertId = json.getInt(keys.getString(i));
+                Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartPolicyId);
+                if(smartPolicy.isPresent()) {
+                    List<Alert> alerts = smartPolicy.get().getAlerts();
+                    int j = alerts.size();
+                    if (alerts.get(j - 1).getId() > alertId) {
+                        map.put(keys.getString(i), Boolean.TRUE);
+                    } else {
+                        map.put(keys.getString(i), Boolean.FALSE);
+                    }
+                }else
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(map, HttpStatus.OK);
+
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+
+    }
+
+
+
 }
