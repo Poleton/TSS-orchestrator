@@ -200,7 +200,7 @@ public class UIRestController implements UIRestApi {
                 if(smartPolicy.isPresent()) {
                     List<Alert> alerts = smartPolicy.get().getAlerts();
                     int j = alerts.size();
-                    if (alerts.get(j - 1).getId() > alertId) {
+                    if (!alerts.isEmpty() && alerts.get(j - 1).getId() > alertId) {
                         map.put(keys.getString(i), Boolean.TRUE);
                     } else {
                         map.put(keys.getString(i), Boolean.FALSE);
