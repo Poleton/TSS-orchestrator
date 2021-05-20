@@ -37,7 +37,7 @@ public interface UIRestApi {
     ResponseEntity<Object> deactivateSmartPolicy(@PathVariable("userId") int userId,@PathVariable("smartId") int smartId);
 
     @PostMapping(Constants.API_SMART_POLICY_ALERT)
-    ResponseEntity<HashMap<String,Boolean>> refreshAlerts(@PathVariable("userId") int userId, @PathVariable("smartId") int smartId, @RequestBody String data) throws JSONException;
+    ResponseEntity<HashMap<String,Integer>> refreshAlerts(@PathVariable("userId") int userId, @PathVariable("smartId") int smartId, @RequestBody String data) throws JSONException;
 
 
 }

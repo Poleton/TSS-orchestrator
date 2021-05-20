@@ -15,6 +15,7 @@ import tss.orchestrator.api.UIRestApi;
 import tss.orchestrator.api.dto.PolicyDTO;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
 import tss.orchestrator.models.*;
+import tss.orchestrator.service.AlertRepository;
 import tss.orchestrator.service.PolicyRepository;
 import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
@@ -40,6 +41,9 @@ public class UIRestController implements UIRestApi {
 
     @Autowired
     private SmartPolicyRepository smartPolicyRepository;
+
+    @Autowired
+    private AlertRepository alertRepository;
 
     @Autowired
     private BlockChainServiceImpl blockChainService;
@@ -183,11 +187,11 @@ public class UIRestController implements UIRestApi {
  */
 
     @Override
-    public ResponseEntity<HashMap<String,Boolean>> refreshAlerts(int userId, int smartId, String data) throws JSONException {
+    public ResponseEntity<HashMap<String,Integer>> refreshAlerts(int userId, int smartId, String data) throws JSONException {
         Optional<User> user = userRepository.findById(userId);
         JSONObject json = new JSONObject(data);
 
-        HashMap<String,Boolean> map = new HashMap<>();
+        HashMap<String,Integer> map = new HashMap<>();
 
         //FALTA FER CONTROL DE ERRORS!!!!!!!!!
 
@@ -201,9 +205,10 @@ public class UIRestController implements UIRestApi {
                     List<Alert> alerts = smartPolicy.get().getAlerts();
                     int j = alerts.size();
                     if (!alerts.isEmpty() && alerts.get(j - 1).getId() > alertId) {
-                        map.put(keys.getString(i), Boolean.TRUE);
+                        int k= alerts.indexOf(alertRepository.findById(alertId).get());
+                        map.put(keys.getString(i),j-k-1);
                     } else {
-                        map.put(keys.getString(i), Boolean.FALSE);
+                        map.put(keys.getString(i), 0);
                     }
                 }else
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
