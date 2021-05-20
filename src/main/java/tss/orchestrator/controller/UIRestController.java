@@ -148,7 +148,7 @@ public class UIRestController implements UIRestApi {
             return new ResponseEntity<>(smartPolicy.get().getAlerts(), HttpStatus.OK);
         }
         else{
-            throw new Exception("User or SmartPolicy not found");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
