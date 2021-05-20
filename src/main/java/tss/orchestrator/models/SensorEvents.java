@@ -1,5 +1,6 @@
 package tss.orchestrator.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,8 +23,10 @@ public class SensorEvents {
             strategy = GenerationType.SEQUENCE,
             generator = "sensor_events_sequence"
     )
+    @JsonIgnore
     private Integer id;
 
+    private String type;
     private BigInteger levelID;
     private BigInteger updatedData;
     private BigInteger updatedDataExcess;

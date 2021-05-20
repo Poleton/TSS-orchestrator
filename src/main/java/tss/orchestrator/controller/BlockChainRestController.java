@@ -72,6 +72,7 @@ public class BlockChainRestController implements BlockChainRestApi {
         alert.setState(Constants.ContractState.ACTIVATED);
         Map<Constants.SensorType, SensorEvents> events = new HashMap<>();
         SensorEvents temp = new SensorEvents();
+        temp.setType(Constants.SensorType.TEMPERATURE.name());
         temp.setContractReserve(BigInteger.valueOf(100));
         temp.setUpdatedData(BigInteger.valueOf(sensorsDataDTO.getSensorData().get("temperature")));
         temp.setLevelExcessTime(BigInteger.valueOf(100));
@@ -79,6 +80,7 @@ public class BlockChainRestController implements BlockChainRestApi {
         temp.setLevelID(BigInteger.valueOf(0));
         events.put(Constants.SensorType.TEMPERATURE, temp);
         SensorEvents acc = new SensorEvents();
+        acc.setType(Constants.SensorType.ACCELERATION.name());
         acc.setContractReserve(BigInteger.valueOf(100));
         acc.setUpdatedData(BigInteger.valueOf(sensorsDataDTO.getSensorData().get("acceleration")));
         acc.setLevelExcessTime(BigInteger.valueOf(100));
