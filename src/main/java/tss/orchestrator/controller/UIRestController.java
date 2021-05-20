@@ -99,7 +99,7 @@ public class UIRestController implements UIRestApi {
         }
 
 
-         */
+        */
 
         //Smart Policy build
         ModelMapper modelMapper = new ModelMapper();
@@ -119,7 +119,7 @@ public class UIRestController implements UIRestApi {
         //BlockChainResponseTransfer responseTransfer = blockChainService.deployContract(smartPolicy);
 
         //Set other parameters
-        policyRepository.setIsSmart(policyOptional.get().getId(), true);
+        policyRepository.smart(policyOptional.get().getId(), true);
         //smartPolicy.setContractAddress(responseTransfer.getContractAddress());
         //smartPolicy.setState(responseTransfer.getState());
         smartPolicy.setContractAddress("dsa6d1sa56d1sad684asd41as");

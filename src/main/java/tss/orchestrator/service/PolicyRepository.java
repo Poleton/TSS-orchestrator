@@ -13,6 +13,6 @@ import tss.orchestrator.utils.constants.Constants;
 @Transactional
 public interface PolicyRepository extends JpaRepository<Policy, Integer> {
     @Modifying
-    @Query("UPDATE Policy u SET u.isSmart = :isSmart WHERE u.id = :id")
-    void setIsSmart(@Param(value = "id") Integer id, @Param(value = "isSmart") boolean isSmart);
+    @Query("UPDATE Policy u SET u.smart = :smart WHERE u.id = :id")
+    void smart(@Param(value = "id") Integer id, @Param(value = "smart") boolean smart);
 }

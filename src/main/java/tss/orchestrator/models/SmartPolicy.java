@@ -69,6 +69,7 @@ public class SmartPolicy<user> {
     //  Deactivation
     private long deactivationTimestamp; //when client says
 
+    @JsonIgnore
     @OneToMany(mappedBy = "smartPolicy")
     private List<Alert> alerts;
 

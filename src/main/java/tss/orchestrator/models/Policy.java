@@ -25,7 +25,7 @@ public class Policy{
     )
     private Integer id;
     private long inceptionTimestamp;
-    private boolean isSmart;
+    private boolean smart;
 
     //From DTO
     private String policyName;
