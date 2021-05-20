@@ -144,7 +144,10 @@ public class UIRestController implements UIRestApi {
         Optional<User> user = userRepository.findById(userId);
         Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartId);
 
-        if(user.isPresent() && smartPolicy.isPresent()){
+        if(smartPolicy.get().getAlerts().isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        else if(user.isPresent() && smartPolicy.isPresent()){
             return new ResponseEntity<>(smartPolicy.get().getAlerts(), HttpStatus.OK);
         }
         else{
