@@ -187,7 +187,7 @@ public class UIRestController implements UIRestApi {
  */
 
     @Override
-    public ResponseEntity<HashMap<String,Integer>> refreshAlerts(int userId, int smartId, String data) throws JSONException {
+    public ResponseEntity<HashMap<String,Integer>> hasNewAlerts(int userId, String data) throws JSONException {
         Optional<User> user = userRepository.findById(userId);
         JSONObject json = new JSONObject(data);
 
@@ -205,8 +205,12 @@ public class UIRestController implements UIRestApi {
                     List<Alert> alerts = smartPolicy.get().getAlerts();
                     int j = alerts.size();
                     if (!alerts.isEmpty() && alerts.get(j - 1).getId() > alertId) {
-                        int k= alerts.indexOf(alertRepository.findById(alertId).get());
-                        map.put(keys.getString(i),j-k-1);
+                        if (alertId != 0){
+                            int k= alerts.indexOf(alertRepository.findById(alertId).get());
+                            map.put(keys.getString(i),j-k-1);
+                        }else{
+                            map.put(keys.getString(i),j-1);
+                        }
                     } else {
                         map.put(keys.getString(i), 0);
                     }

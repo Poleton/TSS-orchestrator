@@ -14,6 +14,7 @@ public class  Constants {
     public static final String API_POLICIES = "/{userId}/api/policies";
     public static final String API_SMART_POLICIES = "/{userId}/api/smart-policies";
     public static final String API_SMART_POLICY_ALERT = "/{userId}/api/smart-policies/{smartId}/alerts";
+    public static final String API_NEW_ALERTS = "/{userId}/api/smart-policies/new-alerts";
     public static final String API_SMART_POLICY_DEACTIVATION = "/{userId}/api/smart-policies/{smartId}/deactivation";
 
 
