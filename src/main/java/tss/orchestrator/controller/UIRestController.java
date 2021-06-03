@@ -115,6 +115,7 @@ public class UIRestController implements UIRestApi {
         smartPolicy.setInsuranceAddress(userOptional.get().getInsuranceAddress());
         for (Map.Entry<String, Sensor> entry : ((HashMap<String, Sensor>) smartPolicy.getSensors()).entrySet()) {
             entry.getValue().setContractContextId(Constants.SensorType.valueOf(entry.getKey().toUpperCase(Locale.ROOT)).ordinal());
+            entry.getValue().setType(entry.getKey());
         }
         smartPolicy.setId(null);
 
@@ -209,7 +210,7 @@ public class UIRestController implements UIRestApi {
                             int k= alerts.indexOf(alertRepository.findById(alertId).get());
                             map.put(keys.getString(i),j-k-1);
                         }else{
-                            map.put(keys.getString(i),j-1);
+                            map.put(keys.getString(i),j);
                         }
                     } else {
                         map.put(keys.getString(i), 0);

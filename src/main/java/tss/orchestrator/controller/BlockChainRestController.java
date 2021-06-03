@@ -45,6 +45,7 @@ public class BlockChainRestController implements BlockChainRestApi {
         Optional<User> userOptional = userRepository.findById(sensorsDataDTO.getUserId());
         SmartPolicy smartPolicy = smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get();
 
+
         /*
         //Blockchain interaction
         blockChainServiceImpl.initialize(userOptional.get().getPrivateKey());

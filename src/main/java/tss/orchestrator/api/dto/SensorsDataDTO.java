@@ -10,5 +10,4 @@ public class SensorsDataDTO {
     private Integer smartPolicyId;
     private Map<String, Long> sensorData;
     private long dataTimeStamp;
-
 }
