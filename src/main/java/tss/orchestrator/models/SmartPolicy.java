@@ -57,7 +57,7 @@ public class SmartPolicy<user> {
     @JoinTable(name = "sensors_mapping",
             joinColumns = {@JoinColumn(name = "smart_policy_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "sensor_id", referencedColumnName = "id")})
-    @MapKey(name = "id")
+    @MapKey(name = "type")
     private Map<String, Sensor> sensors;
 
     //Extra
@@ -69,6 +69,7 @@ public class SmartPolicy<user> {
     //  Deactivation
     private long deactivationTimestamp; //when client says
 
+    @JsonIgnore
     @OneToMany(mappedBy = "smartPolicy")
     private List<Alert> alerts;
 

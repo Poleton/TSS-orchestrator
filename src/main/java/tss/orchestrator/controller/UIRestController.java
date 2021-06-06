@@ -1,5 +1,8 @@
 package tss.orchestrator.controller;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import tss.orchestrator.api.UIRestApi;
 import tss.orchestrator.api.dto.PolicyDTO;
 import tss.orchestrator.api.dto.SmartPolicyDTO;
 import tss.orchestrator.models.*;
+import tss.orchestrator.service.AlertRepository;
 import tss.orchestrator.service.PolicyRepository;
 import tss.orchestrator.service.SmartPolicyRepository;
 import tss.orchestrator.service.UserRepository;
@@ -19,11 +23,13 @@ import tss.orchestrator.utils.constants.Constants;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 import tss.orchestrator.utils.helpers.Validator;
 
+import javax.swing.text.html.HTML;
 import java.net.URI;
 import java.time.Instant;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
 public class UIRestController implements UIRestApi {
 
     @Autowired
@@ -34,6 +40,9 @@ public class UIRestController implements UIRestApi {
 
     @Autowired
     private SmartPolicyRepository smartPolicyRepository;
+
+    @Autowired
+    private AlertRepository alertRepository;
 
     @Autowired
     private BlockChainServiceImpl blockChainService;
@@ -105,6 +114,7 @@ public class UIRestController implements UIRestApi {
         smartPolicy.setInsuranceAddress(userOptional.get().getInsuranceAddress());
         for (Map.Entry<String, Sensor> entry : ((HashMap<String, Sensor>) smartPolicy.getSensors()).entrySet()) {
             entry.getValue().setContractContextId(Constants.SensorType.valueOf(entry.getKey().toUpperCase(Locale.ROOT)).ordinal());
+            entry.getValue().setType(entry.getKey());
         }
         smartPolicy.setId(null);
 
@@ -136,11 +146,14 @@ public class UIRestController implements UIRestApi {
         Optional<User> user = userRepository.findById(userId);
         Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartId);
 
-        if(user.isPresent() && smartPolicy.isPresent()){
+        if(smartPolicy.get().getAlerts().isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        else if(user.isPresent() && smartPolicy.isPresent()){
             return new ResponseEntity<>(smartPolicy.get().getAlerts(), HttpStatus.OK);
         }
         else{
-            throw new Exception("User or SmartPolicy not found");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -156,6 +169,42 @@ public class UIRestController implements UIRestApi {
         }
         else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+    @Override
+    public ResponseEntity<HashMap<String,Integer>> hasNewAlerts(int userId, String data) throws JSONException {
+        Optional<User> user = userRepository.findById(userId);
+        JSONObject json = new JSONObject(data);
+
+        HashMap<String,Integer> map = new HashMap<>();
+
+        if(user.isPresent()){
+            JSONArray keys = json.names();
+            for(int i=0;i<keys.length();i++){
+                int smartPolicyId = keys.getInt(i);
+                int alertId = json.getInt(keys.getString(i));
+                Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartPolicyId);
+                if(smartPolicy.isPresent()) {
+                    List<Alert> alerts = smartPolicy.get().getAlerts();
+                    int j = alerts.size();
+                    if (!alerts.isEmpty() && alerts.get(j - 1).getId() > alertId) {
+                        if (alertId != 0){
+                            int k= alerts.indexOf(alertRepository.findById(alertId).get());
+                            map.put(keys.getString(i),j-k-1);
+                        }else{
+                            map.put(keys.getString(i),j);
+                        }
+                    } else {
+                        map.put(keys.getString(i), 0);
+                    }
+                }else
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(map, HttpStatus.OK);
+
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
     }

@@ -1,5 +1,6 @@
 package tss.orchestrator.api;
 
+import org.json.JSONException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tss.orchestrator.api.dto.PolicyDTO;
@@ -9,6 +10,7 @@ import tss.orchestrator.models.Policy;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.utils.constants.Constants;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RequestMapping(path=Constants.API_USERS)
@@ -34,6 +36,8 @@ public interface UIRestApi {
     @GetMapping(Constants.API_SMART_POLICY_DEACTIVATION)
     ResponseEntity<Object> deactivateSmartPolicy(@PathVariable("userId") int userId,@PathVariable("smartId") int smartId);
 
+    @PostMapping(Constants.API_NEW_ALERTS)
+    ResponseEntity<HashMap<String,Integer>> hasNewAlerts(@PathVariable("userId") int userId, @RequestBody String data) throws JSONException;
 
 
 }

@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class PolicyDTO {
-
     private String policyName;
     private String policyHolderCIF;
     private String policyHolderName;
@@ -14,6 +13,5 @@ public class PolicyDTO {
     private long contractPremium;
     private long contractLiability;
     private long expiryTimestamp;
-
 
 }

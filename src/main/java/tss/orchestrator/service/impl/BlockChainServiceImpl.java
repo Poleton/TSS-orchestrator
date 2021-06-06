@@ -134,6 +134,7 @@ public class BlockChainServiceImpl implements BlockChainService {
 
                 if(updatedEvents.get(0).levelID.intValue() != -1){
                     SensorEvents sensorEvents = new SensorEvents();
+                    sensorEvents.setType(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()]);
                     sensorEvents.setLevelID(updatedEvents.get(0).levelID);
                     sensorEvents.setUpdatedData(updatedEvents.get(0).updatedData.divide(Constants.zeros));
                     sensorEvents.setUpdatedDataExcess(updatedEvents.get(0).updatedDataExcess.divide(Constants.zeros));

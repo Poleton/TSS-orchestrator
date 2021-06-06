@@ -26,7 +26,7 @@ public class Sensor {
     )
     private Integer id;
 
-    private Integer type;
+    private String type;
     private Integer levelDepth;
     private Integer levelMinimumRange;
     private Integer levelMaximumRange;
