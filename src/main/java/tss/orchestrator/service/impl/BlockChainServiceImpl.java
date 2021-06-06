@@ -19,6 +19,7 @@ import org.web3j.protocol.http.HttpService;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -43,9 +44,6 @@ public class BlockChainServiceImpl implements BlockChainService {
         BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();
 
         try {
-            //hacer primero el deploy del token y pillar su direccion
-            //luego hay que pasarsela como parametro en el deploy del contrato
-
             SmartInsurancePolicy contract = SmartInsurancePolicy.deploy(this.web3j,
                     credentials,
                     gasProvider,
@@ -100,22 +98,21 @@ public class BlockChainServiceImpl implements BlockChainService {
 
             return responseTransfer;
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            responseTransfer.setError(e.getMessage());
             return responseTransfer;
         }
     }
 
     public BlockChainResponseTransfer sendSensorsData(SmartPolicy smartPolicy, SensorsDataDTO sensorsDataDTO){
+        BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();
         try {
-
-            BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();
-            responseTransfer.setState(smartPolicy.getState());
-
             SmartInsurancePolicy contract = SmartInsurancePolicy.load(
                     smartPolicy.getContractAddress(),
                     web3j, credentials,
                     gasProvider);
+
+            responseTransfer.setState(smartPolicy.getState());
 
             if(smartPolicy.getState().equals(Constants.ContractState.FUNDED)){
                 contract.activateContract(BigInteger.valueOf(sensorsDataDTO.getDataTimeStamp())).send();
@@ -134,7 +131,7 @@ public class BlockChainServiceImpl implements BlockChainService {
 
                 if(updatedEvents.get(0).levelID.intValue() != -1){
                     SensorEvents sensorEvents = new SensorEvents();
-                    sensorEvents.setType(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()]);
+                    sensorEvents.setType(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()].name());
                     sensorEvents.setLevelID(updatedEvents.get(0).levelID);
                     sensorEvents.setUpdatedData(updatedEvents.get(0).updatedData.divide(Constants.zeros));
                     sensorEvents.setUpdatedDataExcess(updatedEvents.get(0).updatedDataExcess.divide(Constants.zeros));
@@ -146,8 +143,32 @@ public class BlockChainServiceImpl implements BlockChainService {
             return responseTransfer;
 
         } catch(Exception e){
-            e.printStackTrace();
-            return new BlockChainResponseTransfer();
+            responseTransfer.setError(e.getMessage());
+            return responseTransfer;
+        }
+    }
+
+    @Override
+    public BlockChainResponseTransfer deactivate(SmartPolicy smartPolicy) {
+        BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();
+
+        try{
+            SmartInsurancePolicy contract = SmartInsurancePolicy.load(
+                    smartPolicy.getContractAddress(),
+                    web3j, credentials,
+                    gasProvider);
+
+            Instant instant = Instant.now();
+            long deactivationTimestamp = instant.getEpochSecond();
+            contract.deactivateContract(BigInteger.valueOf(deactivationTimestamp)).send();
+
+            responseTransfer.setDeactivationTimestamp(deactivationTimestamp);
+
+            return responseTransfer;
+
+        }catch (Exception e){
+            responseTransfer.setError(e.getMessage());
+            return responseTransfer;
         }
     }
 }

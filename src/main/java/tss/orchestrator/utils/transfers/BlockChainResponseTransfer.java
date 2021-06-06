@@ -17,5 +17,7 @@ public class BlockChainResponseTransfer {
     private String contractAddress;
     private Constants.ContractState state;
     private Map<Constants.SensorType, SensorEvents> events;
+    private long deactivationTimestamp;
+    private String error;
 
 }

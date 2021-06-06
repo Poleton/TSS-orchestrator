@@ -150,6 +150,7 @@ public class UIRestController implements UIRestApi {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         else if(user.isPresent() && smartPolicy.isPresent()){
+            blockChainService.deactivate(smartPolicy.get());
             return new ResponseEntity<>(smartPolicy.get().getAlerts(), HttpStatus.OK);
         }
         else{
