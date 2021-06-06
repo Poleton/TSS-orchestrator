@@ -140,11 +140,11 @@ contract SmartInsurancePolicy {
 
         parameters.deactivationTimestamp = _deactivationTimestamp;
         
-        if(contractReserve > 0) {
-            contractCurrency.transfer(broker, contractReserve);
-        }
+        // if(contractReserve > 0) {
+        //    contractCurrency.transfer(broker, contractReserve);
+        // }
 
-        contractCurrency.transfer(insurance, (contractPremium + (contractLiability - contractReserve)));
+        // contractCurrency.transfer(insurance, (contractPremium + (contractLiability - contractReserve)));
         
         contractState = State.Deactivated;
         return contractReserve;
