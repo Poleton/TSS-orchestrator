@@ -1,2 +1,2 @@
 insert into user (id,broker_address,client_address,insurance_address,name,email,password,private_key)
-values (1, '0x9a6aaBD43f500c83df641c14C09B05076Cf281D0','0x9a6aaBD43f500c83df641c14C09B05076Cf281D0', '0x9a6aaBD43f500c83df641c14C09B05076Cf281D0', 'user1','user1@tss.com', '1234','f1e48d4c2a7f36428f6d4c3b581d10973c36a7ad194e36de5e1b5c3d5c8cd789');
+values (1, '0xfb973e52DfDd1D93D03318908DCaA2085c0c4A08','0xfb973e52DfDd1D93D03318908DCaA2085c0c4A08', '0xfb973e52DfDd1D93D03318908DCaA2085c0c4A08', 'user1','user1@tss.com', '1234','68fc1ac3c7e7cf5302dbf703a4fb49381e91904b6c1330cbe2770215b2f05f1a');

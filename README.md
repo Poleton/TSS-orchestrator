@@ -1,11 +1,10 @@
 # TSS-orchestrator
 This is a block from the TSS project which consists in:
 
-1. **API:**
-    - Login (Spring-REST)
-    - User Interface (Spring-REST)
-    - IoT (Spring-REST)  
-    - Blockchain (Web3)
+1. **REST API:** (Spring, JPA and Web3j)
+    - Login 
+    - User Interface 
+    - Blockchain / IoT
     
 
 2. **DATABASE:** (mySQL)
@@ -106,7 +105,7 @@ Otherwise, if you are willing to use a different smart contract:
 4. A _yourContract.json_ should have been generated in the
    _/TSS-orchestrator/truffle/build/contracts/_, so now convert it into a Wrapper (.java)
    
-        $ web3j generate truffle -t path/to/yourContract.json -o path/to/src/main/java/tss/orchestrator/models/contracts -p tss.orchestrator.models.contracts 
+        $ web3j generate truffle -t path/to/yourContract.json -o path/to/src/main/java -p tss.orchestrator.models.contracts 
 
 5. Finally, modify the methods at the BlockChainServiceImpl class to use your contract.
 

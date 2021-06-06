@@ -20,8 +20,8 @@ public interface SmartPolicyRepository extends JpaRepository<SmartPolicy, Intege
     @Query("UPDATE SmartPolicy u SET u.activationTimestamp = :activationTimestamp WHERE u.id = :id")
     void setActivationTimestamp(@Param(value = "id") Integer id, @Param(value = "activationTimestamp") long activationTimestamp);
 
-    //@Modifying
-    //@Query("UPDATE SmartPolicy u SET u.deactivationTimestamp = :deactivationTimestamp WHERE u.id = :id")
-    //void setDeactivationTimestamp(@Param(value = "id") long id, @Param(value = "deactivationTimestamp") long deactivationTimestamp);
+    @Modifying
+    @Query("UPDATE SmartPolicy u SET u.deactivationTimestamp = :deactivationTimestamp WHERE u.id = :id")
+    void setDeactivationTimestamp(@Param(value = "id") Integer id, @Param(value = "deactivationTimestamp") long deactivationTimestamp);
 
 }

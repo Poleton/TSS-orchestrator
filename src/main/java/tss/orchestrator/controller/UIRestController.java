@@ -150,7 +150,6 @@ public class UIRestController implements UIRestApi {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         else if(user.isPresent() && smartPolicy.isPresent()){
-            blockChainService.deactivate(smartPolicy.get());
             return new ResponseEntity<>(smartPolicy.get().getAlerts(), HttpStatus.OK);
         }
         else{
@@ -165,7 +164,19 @@ public class UIRestController implements UIRestApi {
         Optional<User> user = userRepository.findById(userId);
 
         if(user.isPresent() && smartPolicy.isPresent()){
-            smartPolicy.get().setState(Constants.ContractState.DEACTIVATED);
+            Instant instant = Instant.now();
+            long deactivationTimestamp = instant.getEpochSecond();
+            smartPolicy.get().setDeactivationTimestamp(deactivationTimestamp);
+            BlockChainResponseTransfer responseTransfer = blockChainService.deactivate(smartPolicy.get());
+
+            if(responseTransfer.getError() != null){
+                smartPolicyRepository.setState(smartPolicy.get().getId(), Constants.ContractState.DEACTIVATED);
+                smartPolicyRepository.setDeactivationTimestamp(smartPolicy.get().getId(), deactivationTimestamp);
+            }else{
+                System.out.println(responseTransfer.getError());
+                return new ResponseEntity<>(responseTransfer.getError(), HttpStatus.EXPECTATION_FAILED);
+            }
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         else {

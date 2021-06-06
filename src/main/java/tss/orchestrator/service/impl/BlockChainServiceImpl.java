@@ -55,7 +55,8 @@ public class BlockChainServiceImpl implements BlockChainService {
                     BigInteger.valueOf(smartPolicy.getContractLiability()).multiply(Constants.zeros),  //1000
                     BigInteger.valueOf(smartPolicy.getInceptionTimestamp()), //1619647900
                     BigInteger.valueOf(smartPolicy.getExpiryTimestamp()), //1619747900
-                    smartPolicy.getTerritorialScope())
+                    smartPolicy.getTerritorialScope(),
+                    false)
                     .send();
 
             responseTransfer.setContractAddress(contract.getContractAddress());
@@ -158,11 +159,9 @@ public class BlockChainServiceImpl implements BlockChainService {
                     web3j, credentials,
                     gasProvider);
 
-            Instant instant = Instant.now();
-            long deactivationTimestamp = instant.getEpochSecond();
-            contract.deactivateContract(BigInteger.valueOf(deactivationTimestamp)).send();
+            contract.deactivateContract(BigInteger.valueOf(smartPolicy.getDeactivationTimestamp())).send();
 
-            responseTransfer.setDeactivationTimestamp(deactivationTimestamp);
+            responseTransfer.setDeactivationTimestamp(smartPolicy.getDeactivationTimestamp());
 
             return responseTransfer;
 

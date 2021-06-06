@@ -29,8 +29,7 @@ interface IERC20 {
     function mint(address account, uint256 amount) external;
     function burn(address account, uint256 amount) external;
     
-    function setCurrencyPrice(uint256 price) external;
-    function getCurrencyPrice() external view returns (uint256);
+    function getOwner() external view returns (address);
 }
 
 contract TSSDollar is IERC20 {
@@ -50,8 +49,6 @@ contract TSSDollar is IERC20 {
     uint256 maxSupply_ = 10000000000000000000000000;
 
     address public contractOwner;
-    
-    uint256 currencyPrice;
 
     using SafeMath for uint256;
 
@@ -63,7 +60,6 @@ contract TSSDollar is IERC20 {
     constructor() public {
 
         contractOwner = tx.origin;
-        currencyPrice = 1000;
         balances[msg.sender] = totalSupply_;
     }
 
@@ -139,14 +135,9 @@ contract TSSDollar is IERC20 {
         emit Transfer(account, address(0), amount);
     }
     
-    function setCurrencyPrice(uint256 price) external override onlyOwner {
+    function getOwner() external override view returns (address) {
         
-        currencyPrice = price;
-    }
-    
-    function getCurrencyPrice() external override view returns (uint256) {
-        
-        return currencyPrice;
+        return contractOwner;
     }
 }
 
@@ -157,12 +148,12 @@ contract TSSDollarDEX {
 
     IERC20 public contractCurrency;
 
-    uint256 public priceCurrency;
+    uint256 public currencyPrice;
 
     constructor() public {
         
         contractCurrency = new TSSDollar();
-        priceCurrency = contractCurrency.getCurrencyPrice();
+        currencyPrice = 1000;
     }
     
     fallback() external payable {
@@ -172,7 +163,7 @@ contract TSSDollarDEX {
 
     function buy() public payable {
         
-        uint256 amountTobuy = msg.value * priceCurrency;
+        uint256 amountTobuy = msg.value * currencyPrice;
         uint256 dexBalance = contractCurrency.balanceOf(address(this));
         
         require(amountTobuy > 0, 'Insuficient ETH Sent Quantity');
@@ -186,7 +177,7 @@ contract TSSDollarDEX {
     function buyAndApprove(address _delegate) external payable {
         
         buy();
-        contractCurrency.approve(_delegate, msg.value * priceCurrency);
+        contractCurrency.approve(_delegate, msg.value * currencyPrice);
     }
 
     function sell(uint256 _amount) public {
@@ -198,7 +189,7 @@ contract TSSDollarDEX {
         require(_allowance >= _amount, 'Insuficient Account Allowance');
         
         contractCurrency.transferFrom(msg.sender, address(this), _amount);
-        payable(msg.sender).transfer(_amount/priceCurrency);
+        payable(msg.sender).transfer(_amount/currencyPrice);
         
         emit Sold(_amount);
     }
@@ -236,8 +227,9 @@ contract TSSDollarDEX {
     
     function setCurrencyPrice(uint256 _price) external {
         
-        contractCurrency.setCurrencyPrice(_price);
-        priceCurrency = contractCurrency.getCurrencyPrice();
+        require(msg.sender == contractCurrency.getOwner());
+        
+        currencyPrice = _price;
     }
 }
 
@@ -254,6 +246,8 @@ contract SmartInsurancePolicy {
     
     bool public premiumFunded = false;
     bool public liabilityFunded = false;
+    
+    bool public liabilityPartition;
 
     // Contract Addresses
     address public owner;
@@ -340,7 +334,7 @@ contract SmartInsurancePolicy {
         _;
     }
 
-    constructor(address _contractCurrency, address _client, address _insurance, address _broker, uint256 _premium, uint256 _liability, uint256 _inception, uint256 _expiry, string memory _scope) public {
+    constructor(address _contractCurrency, address _client, address _insurance, address _broker, uint256 _premium, uint256 _liability, uint256 _inception, uint256 _expiry, string memory _scope, bool _liabilityPartition) public {
     
         contractCurrency = IERC20(address(_contractCurrency));
         
@@ -353,6 +347,8 @@ contract SmartInsurancePolicy {
         contractLiability = _liability;
 
         parameters = ContractParametrization(_inception, 0, _expiry, 0, _scope);
+        
+        liabilityPartition = _liabilityPartition;
 
         contractState = State.Initialized;
     }
@@ -497,7 +493,11 @@ contract SmartInsurancePolicy {
 
             if(shipments[i].ID == shipmentID) {
                 
-                shipments[i].reserve += (shipments[i].liability * ((_excessTime/60)*_percentualWeight)) / 100;
+                if(liabilityPartition) {
+                    shipments[i].reserve += ((shipments[i].liability/shipments[i].numSensors) * ((_excessTime/60)*_percentualWeight)) / 100;
+                }else{
+                    shipments[i].reserve += (shipments[i].liability * ((_excessTime/60)*_percentualWeight)) / 100;
+                }
                 
                 if(shipments[i].reserve > shipments[i].liability) {
                     shipments[i].reserve = shipments[i].liability;

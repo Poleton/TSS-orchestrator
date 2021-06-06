@@ -1,4 +1,4 @@
-var DEX = artifacts.require("./DEX.sol");
+var DEX = artifacts.require("./TSSDollarDEX.sol");
 
 module.exports = function(deployer) {
    deployer.deploy(DEX);
