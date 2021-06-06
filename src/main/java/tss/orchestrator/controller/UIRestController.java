@@ -163,13 +163,13 @@ public class UIRestController implements UIRestApi {
         Optional<SmartPolicy> smartPolicy = smartPolicyRepository.findById(smartId);
         Optional<User> user = userRepository.findById(userId);
 
-        if(user.isPresent() && smartPolicy.isPresent()){
+        if(user.isPresent() && smartPolicy.isPresent() && smartPolicy.get().getState() != Constants.ContractState.DEACTIVATED){
             Instant instant = Instant.now();
             long deactivationTimestamp = instant.getEpochSecond();
             smartPolicy.get().setDeactivationTimestamp(deactivationTimestamp);
             BlockChainResponseTransfer responseTransfer = blockChainService.deactivate(smartPolicy.get());
 
-            if(responseTransfer.getError() != null){
+            if(responseTransfer.getError() == null){
                 smartPolicyRepository.setState(smartPolicy.get().getId(), Constants.ContractState.DEACTIVATED);
                 smartPolicyRepository.setDeactivationTimestamp(smartPolicy.get().getId(), deactivationTimestamp);
             }else{
