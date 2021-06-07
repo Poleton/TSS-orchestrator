@@ -119,7 +119,6 @@ public class BlockChainServiceImpl implements BlockChainService {
                 responseTransfer.setState(Constants.ContractState.ACTIVATED);
             }
 
-            responseTransfer.setEvents(new HashMap<>());
             for (Map.Entry<String, Long> entry : sensorsDataDTO.getSensorData().entrySet()){
                 int id = Constants.SensorType.valueOf(entry.getKey().toUpperCase(Locale.ROOT)).ordinal();
                 TransactionReceipt transactionReceipt = contract.updateSensor(BigInteger.valueOf(id),
@@ -127,9 +126,16 @@ public class BlockChainServiceImpl implements BlockChainService {
                         BigInteger.valueOf(sensorsDataDTO.getDataTimeStamp()))
                         .send();
 
+                System.out.println("ID update: " + id);
+
                 List<SmartInsurancePolicy.SensorUpdatedEventResponse> updatedEvents = contract.getSensorUpdatedEvents(transactionReceipt);
 
+                System.out.println(updatedEvents.get(0).levelID.intValue());
+
                 if(updatedEvents.get(0).levelID.intValue() != -1){
+                    if (responseTransfer.getEvents() == null){
+                        responseTransfer.setEvents(new HashMap<>());
+                    }
                     SensorEvents sensorEvents = new SensorEvents();
                     sensorEvents.setType(Constants.SensorType.values()[updatedEvents.get(0).sensorType.intValue()].name());
                     sensorEvents.setLevelID(updatedEvents.get(0).levelID);

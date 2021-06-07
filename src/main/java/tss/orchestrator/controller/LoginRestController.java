@@ -19,18 +19,14 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
 public class LoginRestController implements LoginRestApi {
-
     @Autowired
     private UserRepository userRepository;
 
     public ResponseEntity<Integer> login(UserDTO user) {
         User username = userRepository.findByNameAndPassword(user.getName(), user.getPassword());
-
         if(username != null) {
-            //return ResponseEntity.ok().build();
-            return new ResponseEntity<Integer>(username.getId(), HttpStatus.OK);
+            return new ResponseEntity<>(username.getId(), HttpStatus.OK);
         }
         else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
     }
 }

@@ -40,6 +40,8 @@ public class BlockChainRestController implements BlockChainRestApi {
         Optional<User> userOptional = userRepository.findById(sensorsDataDTO.getUserId());
         SmartPolicy smartPolicy = smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get();
 
+        System.out.println(sensorsDataDTO.getSensorData().toString());
+
         //Blockchain interaction
         blockChainServiceImpl.initialize(userOptional.get().getPrivateKey());
         BlockChainResponseTransfer responseTransfer = blockChainServiceImpl.sendSensorsData(smartPolicy, sensorsDataDTO);
@@ -49,7 +51,7 @@ public class BlockChainRestController implements BlockChainRestApi {
         }
 
         //Alert management
-        if (!responseTransfer.getEvents().equals(null)){
+        if (responseTransfer.getEvents() != null){
             ModelMapper modelMapper = new ModelMapper();
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
             Alert alert = modelMapper.map(responseTransfer, Alert.class);
