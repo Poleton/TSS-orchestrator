@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@Component
 @Service
 public class BlockChainServiceImpl implements BlockChainService {
 

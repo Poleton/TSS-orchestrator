@@ -11,9 +11,9 @@ import tss.orchestrator.api.dto.SensorsDataDTO;
 import tss.orchestrator.models.Alert;
 import tss.orchestrator.models.SmartPolicy;
 import tss.orchestrator.models.User;
-import tss.orchestrator.service.AlertRepository;
-import tss.orchestrator.service.SmartPolicyRepository;
-import tss.orchestrator.service.UserRepository;
+import tss.orchestrator.repositories.AlertRepository;
+import tss.orchestrator.repositories.SmartPolicyRepository;
+import tss.orchestrator.repositories.UserRepository;
 import tss.orchestrator.service.BlockChainService;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
