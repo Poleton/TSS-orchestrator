@@ -1,15 +1,19 @@
 package tss.orchestrator.service.impl;
 
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.StaticGasProvider;
 import tss.orchestrator.api.dto.SensorsDataDTO;
-import tss.orchestrator.models.Sensor;
-import tss.orchestrator.models.SensorEvents;
-import tss.orchestrator.models.SmartPolicy;
+import tss.orchestrator.models.*;
 import tss.orchestrator.models.contracts.SmartInsurancePolicy;
+import tss.orchestrator.repositories.AlertRepository;
+import tss.orchestrator.repositories.SmartPolicyRepository;
+import tss.orchestrator.repositories.UserRepository;
 import tss.orchestrator.service.BlockChainService;
 import tss.orchestrator.utils.constants.Constants;
 import org.springframework.stereotype.Service;
@@ -19,10 +23,7 @@ import org.web3j.protocol.http.HttpService;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BlockChainServiceImpl implements BlockChainService {
@@ -30,6 +31,44 @@ public class BlockChainServiceImpl implements BlockChainService {
     private Web3j web3j;
     private Credentials credentials;
     private ContractGasProvider gasProvider;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private SmartPolicyRepository smartPolicyRepository;
+
+    @Autowired
+    private AlertRepository alertRepository;
+
+    @Override
+    public BlockChainResponseTransfer createSmartPolicy(String privateKey, SmartPolicy smartPolicy) {
+        this.initialize(privateKey);
+        BlockChainResponseTransfer responseTransfer = this.deployContract(smartPolicy);
+        return responseTransfer;
+    }
+
+    @Override
+    public void updateSensorsData(SensorsDataDTO sensorsDataDTO){
+        Optional<User> userOptional = userRepository.findById(sensorsDataDTO.getUserId());
+        SmartPolicy smartPolicy = smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get();
+
+        this.initialize(userOptional.get().getPrivateKey());
+        BlockChainResponseTransfer responseTransfer = this.sendSensorsData(smartPolicy, sensorsDataDTO);
+        if (smartPolicy.getState() != responseTransfer.getState()){
+            smartPolicyRepository.setState(smartPolicy.getId(), responseTransfer.getState());
+            smartPolicyRepository.setActivationTimestamp(smartPolicy.getId(), sensorsDataDTO.getDataTimeStamp());
+        }
+
+        //Alert management
+        if (responseTransfer.getEvents() != null){
+            ModelMapper modelMapper = new ModelMapper();
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+            Alert alert = modelMapper.map(responseTransfer, Alert.class);
+            alert.setSmartPolicy(smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get());
+            alertRepository.save(alert);
+        }
+    }
 
     public void initialize(String privateKey){
         this.web3j = Web3j.build(new HttpService(Constants.HTTP_PROVIDER));
@@ -153,7 +192,6 @@ public class BlockChainServiceImpl implements BlockChainService {
         }
     }
 
-    @Override
     public BlockChainResponseTransfer deactivate(SmartPolicy smartPolicy) {
         BlockChainResponseTransfer responseTransfer = new BlockChainResponseTransfer();
 

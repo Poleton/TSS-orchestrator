@@ -10,18 +10,18 @@ import tss.orchestrator.api.LoginRestApi;
 import tss.orchestrator.api.dto.UserDTO;
 import tss.orchestrator.models.User;
 import tss.orchestrator.repositories.UserRepository;
+import tss.orchestrator.service.LoginService;
+import tss.orchestrator.utils.transfers.LoginResponseTransfer;
 
 @RestController
 @CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
 public class LoginRestController implements LoginRestApi {
+
     @Autowired
-    private UserRepository userRepository;
+    private LoginService loginServiceImpl;
 
     public ResponseEntity<Integer> login(UserDTO user) {
-        User username = userRepository.findByNameAndPassword(user.getName(), user.getPassword());
-        if(username != null) {
-            return new ResponseEntity<>(username.getId(), HttpStatus.OK);
-        }
-        else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        LoginResponseTransfer responseTransfer = loginServiceImpl.login(user);
+        return new ResponseEntity<>(responseTransfer.getUserId(), responseTransfer.getHttpStatus());
     }
 }

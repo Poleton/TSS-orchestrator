@@ -18,7 +18,7 @@ public interface UIRestApi {
 
     //POLICIES
     @GetMapping(Constants.API_POLICIES)
-    List<Policy> retrieveAllPolicies(@PathVariable int userId);
+    ResponseEntity<List<Object>> retrieveAllPolicies(@PathVariable int userId);
 
     @PostMapping(Constants.API_POLICIES)
     ResponseEntity<String> createPolicy(@PathVariable int userId, @RequestBody PolicyDTO policyDTO);
@@ -28,10 +28,10 @@ public interface UIRestApi {
     ResponseEntity<Object> createSmartPolicy(@PathVariable int userId, @RequestBody SmartPolicyDTO smartPolicyDTO);
 
     @GetMapping(Constants.API_SMART_POLICIES)
-    List<SmartPolicy> retrieveAllSmartPolicies(@PathVariable int userId) throws Exception;
+    ResponseEntity<List<Object>> retrieveAllSmartPolicies(@PathVariable int userId) throws Exception;
 
     @GetMapping(Constants.API_SMART_POLICY_ALERT)
-    ResponseEntity<List<Alert>> getAlerts(@PathVariable("userId") int userId, @PathVariable("smartId") int smartId) throws Exception;
+    ResponseEntity<List<Object>> getAlerts(@PathVariable("userId") int userId, @PathVariable("smartId") int smartId) throws Exception;
 
     @GetMapping(Constants.API_SMART_POLICY_DEACTIVATION)
     ResponseEntity<Object> deactivateSmartPolicy(@PathVariable("userId") int userId,@PathVariable("smartId") int smartId);

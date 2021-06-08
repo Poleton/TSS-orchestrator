@@ -15,6 +15,8 @@ import tss.orchestrator.repositories.AlertRepository;
 import tss.orchestrator.repositories.SmartPolicyRepository;
 import tss.orchestrator.repositories.UserRepository;
 import tss.orchestrator.service.BlockChainService;
+import tss.orchestrator.service.LoginService;
+import tss.orchestrator.service.UIService;
 import tss.orchestrator.utils.transfers.BlockChainResponseTransfer;
 
 import java.util.Optional;
@@ -25,39 +27,10 @@ public class BlockChainRestController implements BlockChainRestApi {
     @Autowired
     private BlockChainService blockChainServiceImpl;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SmartPolicyRepository smartPolicyRepository;
-
-    @Autowired
-    private AlertRepository alertRepository;
-
     @Override
     public ResponseEntity<Object> sendSensorsData(@RequestBody SensorsDataDTO sensorsDataDTO){
 
-        Optional<User> userOptional = userRepository.findById(sensorsDataDTO.getUserId());
-        SmartPolicy smartPolicy = smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get();
-
-        System.out.println(sensorsDataDTO.getSensorData().toString());
-
-        //Blockchain interaction
-        blockChainServiceImpl.initialize(userOptional.get().getPrivateKey());
-        BlockChainResponseTransfer responseTransfer = blockChainServiceImpl.sendSensorsData(smartPolicy, sensorsDataDTO);
-        if (smartPolicy.getState() != responseTransfer.getState()){
-            smartPolicyRepository.setState(smartPolicy.getId(), responseTransfer.getState());
-            smartPolicyRepository.setActivationTimestamp(smartPolicy.getId(), sensorsDataDTO.getDataTimeStamp());
-        }
-
-        //Alert management
-        if (responseTransfer.getEvents() != null){
-            ModelMapper modelMapper = new ModelMapper();
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-            Alert alert = modelMapper.map(responseTransfer, Alert.class);
-            alert.setSmartPolicy(smartPolicyRepository.findById(sensorsDataDTO.getSmartPolicyId()).get());
-            alertRepository.save(alert);
-        }
+        blockChainServiceImpl.updateSensorsData(sensorsDataDTO);
 
         return ResponseEntity.accepted().build();
     }
